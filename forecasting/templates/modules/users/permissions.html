@@ -1,0 +1,318 @@
+<div class="flex items-center justify-center bg-gray-700 bg-opacity-70 mx-auto overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 w-full md:inset-0 px-2 pt-2 h-screen" style="display: none" x-show="permission">
+    <div class="flex flex-col relative w-full max-w-lg rounded-lg">
+        <!-- MODAL -->
+        <div class="relative w-full max-w-lg h-full md:h-auto bg-white rounded-lg">
+            <!-- Modal content -->
+            <div class="bg-white rounded-lg shadow dark:bg-gray-700 w-full">
+                <div class="pt-3 pl-2 pb-3 bg-green-400 rounded-t-lg">
+                    <h3 class="text-xl font-medium text-white dark:text-white">
+                        User Permissions
+                    </h3>
+                </div>
+                <button type="button" class="absolute top-3 right-2.5 text-green-200 bg-transparent hover:bg-green-200 hover:text-green-400 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-800 dark:hover:text-white" x-on:click="close_modal">
+                    <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                    <span class="sr-only">Close modal</span>
+                </button>
+            </div>
+            <!--<div class="m-2 p-2 mt-3 flex flex-col space-y-2">-->
+            <div class="flex flex-col space-y-2">
+                <div class="text-gray-900 flex flex-row items-center bg-gray-100">
+                    <div class="m-3 mt-3 h-16 w-16 rounded-full border-2 border-gray-200 bg-red-200">
+                        <img class="rounded-full" :src="avatar" />
+                    </div>
+                    <div class="flex flex-col border-r-2 border-gray-200 pr-10">
+                        <span x-text="account_name" class="text-lg font-bold text-green-400"></span>
+                        <span x-text="account_type" class="text-md text-gray-400"></span>
+                    </div>
+                    <div class="flex flex-col items-center pl-10">
+                        <span class="text-lg font-bold text-gray-400">Account Status</span>
+                        <span x-text="account_status" class="rounded-md text-white text-center px-3" :class="[account_status == 'Active' ? 'bg-green-400 w-20' : 'bg-red-400 w-20']"  ></span>
+                    </div>
+                </div>
+                <div class="flex flex-col mx-4">
+                    <div class="flex flex-row space-x-3 border-b border-gray-400 pb-2 mt-5">
+                        <span class="text-xs font-bold text-gray-400 uppercase w-40">Module</span>
+                        <span class="text-xs font-bold text-gray-400 uppercase">View</span>
+                        <span class="text-xs font-bold text-gray-400 uppercase">Create</span>
+                        <span class="text-xs font-bold text-gray-400 uppercase">Update</span>
+                        <span class="text-xs font-bold text-gray-400 uppercase">Delete</span>
+                        <span class="text-xs font-bold text-gray-400 uppercase">Permission</span>
+                    </div>
+                    <!-- START PERMISSIONS -->
+                    <div class="flex flex-row space-x-5 pb-2 mt-5">
+                        <span class="text-xs font-bold text-gray-400 uppercase w-40">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="inline h-5 w-5 mb-1 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" />
+                            </svg>
+                            <span class="">Forecasting</span>
+                        </span>
+                        <span class="text-xs font-bold text-gray-400 uppercase">
+                            <div class="bg-white rounded-full -ml-6 lg:-ml-2" x-on:click="forecasting = !forecasting">
+                                <svg xmlns="http://www.w3.org/2000/svg"
+                                    class="h-7 w-7 cursor-pointer hover:bg-gray-200 rounded-full"
+                                    :class="[forecasting ? 'text-green-400' : 'hidden']"
+                                    viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                            <div class="bg-white rounded-full -ml-6 lg:-ml-2" x-on:click="forecasting = !forecasting">
+                                <svg xmlns="http://www.w3.org/2000/svg"
+                                    class="h-7 w-7 cursor-pointer hover:bg-gray-200 rounded-full"
+                                    :class="[forecasting ? 'hidden' : 'text-red-400']"
+                                    viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                        </span>
+                        <!--<span class="text-xs font-bold text-gray-400 uppercase">Create</span>
+                        <span class="text-xs font-bold text-gray-400 uppercase">Update</span>
+                        <span class="text-xs font-bold text-gray-400 uppercase">Delete</span>
+                        <span class="text-xs font-bold text-gray-400 uppercase">Permission</span>-->
+                    </div>
+                    <div class="flex flex-row space-x-5 pb-2 mt-5">
+                        <span class="text-xs font-bold text-gray-400 uppercase w-40">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="inline h-5 w-5 mb-1 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" />
+                            </svg>
+                            <span class="">User</span>
+                        </span>
+                        <span class="text-xs font-bold text-gray-400 uppercase">
+                            <div class="bg-white rounded-full -ml-6 lg:-ml-2 mr-3" x-on:click="user_r = !user_r">
+                                <svg xmlns="http://www.w3.org/2000/svg"
+                                    class="h-7 w-7 cursor-pointer hover:bg-gray-200 rounded-full"
+                                    :class="[user_r ? 'text-green-400' : 'hidden']"
+                                    viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                            <div class="bg-white rounded-full -ml-6 lg:-ml-2 mr-3" x-on:click="user_r = !user_r">
+                                <svg xmlns="http://www.w3.org/2000/svg"
+                                    class="h-7 w-7 cursor-pointer hover:bg-gray-200 rounded-full"
+                                    :class="[user_r ? 'hidden' : 'text-red-400']"
+                                    viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                        </span>
+                        <span class="text-xs font-bold text-gray-400 uppercase">
+                            <div class="bg-white rounded-full mr-3" x-on:click="user_c = !user_c">
+                                <svg xmlns="http://www.w3.org/2000/svg"
+                                    class="h-7 w-7 cursor-pointer hover:bg-gray-200 rounded-full"
+                                    :class="[user_c ? 'text-green-400' : 'hidden']"
+                                    viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                            <div class="bg-white rounded-full mr-3" x-on:click="user_c = !user_c">
+                                <svg xmlns="http://www.w3.org/2000/svg"
+                                    class="h-7 w-7 cursor-pointer hover:bg-gray-200 rounded-full"
+                                    :class="[user_c ? 'hidden' : 'text-red-400']"
+                                    viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                        </span>
+                        <span class="text-xs font-bold text-gray-400 uppercase">
+                            <div class="bg-white rounded-full mr-3" x-on:click="user_u = !user_u">
+                                <svg xmlns="http://www.w3.org/2000/svg"
+                                    class="h-7 w-7 cursor-pointer hover:bg-gray-200 rounded-full"
+                                    :class="[user_u ? 'text-green-400' : 'hidden']"
+                                    viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                            <div class="bg-white rounded-full mr-3" x-on:click="user_u = !user_u">
+                                <svg xmlns="http://www.w3.org/2000/svg"
+                                    class="h-7 w-7 cursor-pointer hover:bg-gray-200 rounded-full"
+                                    :class="[user_u ? 'hidden' : 'text-red-400']"
+                                    viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                        </span>
+                        <span class="text-xs font-bold text-gray-400 uppercase">
+                            <div class="bg-white rounded-full mr-3" x-on:click="user_d = !user_d">
+                                <svg xmlns="http://www.w3.org/2000/svg"
+                                    class="h-7 w-7 cursor-pointer hover:bg-gray-200 rounded-full"
+                                    :class="[user_d ? 'text-green-400' : 'hidden']"
+                                    viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                            <div class="bg-white rounded-full mr-3" x-on:click="user_d = !user_d">
+                                <svg xmlns="http://www.w3.org/2000/svg"
+                                    class="h-7 w-7 cursor-pointer hover:bg-gray-200 rounded-full"
+                                    :class="[user_d ? 'hidden' : 'text-red-400']"
+                                    viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                        </span>
+                        <span class="text-xs font-bold text-gray-400 uppercase">
+                            <div class="bg-white rounded-full" x-on:click="user_p = !user_p">
+                                <svg xmlns="http://www.w3.org/2000/svg"
+                                    class="h-7 w-7 cursor-pointer hover:bg-gray-200 rounded-full"
+                                    :class="[user_p ? 'text-green-400' : 'hidden']"
+                                    viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                            <div class="bg-white rounded-full" x-on:click="user_p = !user_p">
+                                <svg xmlns="http://www.w3.org/2000/svg"
+                                    class="h-7 w-7 cursor-pointer hover:bg-gray-200 rounded-full"
+                                    :class="[user_p ? 'hidden' : 'text-red-400']"
+                                    viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                        </span>
+                    </div>
+                    <div class="flex flex-row space-x-5 pb-2 mt-5">
+                        <span class="text-xs font-bold text-gray-400 uppercase w-40">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="inline h-5 w-5 mb-1 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" />
+                            </svg>
+                            <span class="">Upload</span>
+                        </span>
+                        <span class="text-xs font-bold text-gray-400 uppercase">
+                            <div class="bg-white rounded-full -ml-6 lg:-ml-2" x-on:click="uploading = !uploading">
+                                <svg xmlns="http://www.w3.org/2000/svg"
+                                    class="h-7 w-7 cursor-pointer hover:bg-gray-200 rounded-full"
+                                    :class="[uploading ? 'text-green-400' : 'hidden']"
+                                    viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                            <div class="bg-white rounded-full -ml-6 lg:-ml-2" x-on:click="uploading = !uploading">
+                                <svg xmlns="http://www.w3.org/2000/svg"
+                                    class="h-7 w-7 cursor-pointer hover:bg-gray-200 rounded-full"
+                                    :class="[uploading ? 'hidden' : 'text-red-400']"
+                                    viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                        </span>
+                        <!--<span class="text-xs font-bold text-gray-400 uppercase">Create</span>
+                        <span class="text-xs font-bold text-gray-400 uppercase">Update</span>
+                        <span class="text-xs font-bold text-gray-400 uppercase">Delete</span>
+                        <span class="text-xs font-bold text-gray-400 uppercase">Permission</span>-->
+                    </div>
+                    <div class="flex flex-row space-x-5 pb-2 mt-5">
+                        <span class="text-xs font-bold text-gray-400 uppercase w-40">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="inline h-5 w-5 mb-1 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" />
+                            </svg>
+                            <span class="">Settings</span>
+                        </span>
+                        <!-- INVISIBLE -->
+                        <span class="text-xs font-bold text-gray-400 uppercase invisible">
+                            <div class="bg-white rounded-full -ml-6 lg:-ml-2 mr-3">
+                                <svg xmlns="http://www.w3.org/2000/svg"
+                                    class="h-7 w-7 cursor-pointer hover:bg-gray-200 rounded-full"
+                                    viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                        </span>
+                        <!-- INVISIBLE -->
+
+                        <span class="text-xs font-bold text-gray-400 uppercase">
+                            <div class="bg-white rounded-full mr-3" x-on:click="setting_c = !setting_c">
+                                <svg xmlns="http://www.w3.org/2000/svg"
+                                    class="h-7 w-7 cursor-pointer hover:bg-gray-200 rounded-full"
+                                    :class="[setting_c ? 'text-green-400' : 'hidden']"
+                                    viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                            <div class="bg-white rounded-full mr-3" x-on:click="setting_c = !setting_c">
+                                <svg xmlns="http://www.w3.org/2000/svg"
+                                    class="h-7 w-7 cursor-pointer hover:bg-gray-200 rounded-full"
+                                    :class="[setting_c ? 'hidden' : 'text-red-400']"
+                                    viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                        </span>
+                        <span class="text-xs font-bold text-gray-400 uppercase">
+                            <div class="bg-white rounded-full mr-3" x-on:click="setting_u = !setting_u">
+                                <svg xmlns="http://www.w3.org/2000/svg"
+                                    class="h-7 w-7 cursor-pointer hover:bg-gray-200 rounded-full"
+                                    :class="[setting_u ? 'text-green-400' : 'hidden']"
+                                    viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                            <div class="bg-white rounded-full mr-3" x-on:click="setting_u = !setting_u">
+                                <svg xmlns="http://www.w3.org/2000/svg"
+                                    class="h-7 w-7 cursor-pointer hover:bg-gray-200 rounded-full"
+                                    :class="[setting_u ? 'hidden' : 'text-red-400']"
+                                    viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                        </span>
+                        <span class="text-xs font-bold text-gray-400 uppercase">
+                            <div class="bg-white rounded-full mr-3" x-on:click="setting_d = !setting_d">
+                                <svg xmlns="http://www.w3.org/2000/svg"
+                                    class="h-7 w-7 cursor-pointer hover:bg-gray-200 rounded-full"
+                                    :class="[setting_d ? 'text-green-400' : 'hidden']"
+                                    viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                            <div class="bg-white rounded-full mr-3" x-on:click="setting_d = !setting_d">
+                                <svg xmlns="http://www.w3.org/2000/svg"
+                                    class="h-7 w-7 cursor-pointer hover:bg-gray-200 rounded-full"
+                                    :class="[setting_d ? 'hidden' : 'text-red-400']"
+                                    viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                        </span>
+                        <!-- INVISIBLE -->
+                        <span class="text-xs font-bold text-gray-400 uppercase">
+                            <div class="bg-white rounded-full invisible">
+                                <svg xmlns="http://www.w3.org/2000/svg"
+                                    class="h-7 w-7 cursor-pointer hover:bg-gray-200 rounded-full"
+                                    viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                        </span>
+                        <!-- INVISIBLE -->
+                    </div>
+                </div>
+                <div class="flex flex-row justify-center">
+                    <form class="mt-5" action="{{ url_for('views.user_permission') }}" method="POST">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                        <input id="permission_id" name="permission_id" x-model="permission_id" hidden>
+                        <input id="u_user_id" name="user_id" x-model="user_id" hidden>
+                        <input id="forecasting" name="forecasting" x-model="forecasting" hidden>
+                        <input id="user_c" name="user_c" x-model="user_c" hidden>
+                        <input id="user_r" name="user_r" x-model="user_r" hidden>
+                        <input id="user_u" name="user_u" x-model="user_u" hidden>
+                        <input id="user_d" name="user_d" x-model="user_d" hidden>
+                        <input id="user_p" name="user_p" x-model="user_p" hidden>
+                        <input id="setting_c" name="setting_c" x-model="setting_c" hidden>
+                        <input id="setting_u" name="setting_u" x-model="setting_u" hidden>
+                        <input id="setting_d" name="setting_d" x-model="setting_d" hidden>
+                        <input id="uploading" name="uploading" x-model="uploading" hidden>
+                        <button type="submit" class="inline-flex items-center px-4 py-2 bg-green-500 border border-transparent rounded-lg font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-400 active:bg-gray-900 focus:outline-none focus:border-gray-900 focus:ring ring-gray-300 disabled:opacity-25 transition ease-in-out duration-150">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 -ml-1 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            Update
+                        </button>
+                        <button type="button" class="inline-flex items-center px-4 py-2 bg-gray-500 border border-transparent rounded-lg font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-400 active:bg-gray-900 focus:outline-none focus:border-gray-900 focus:ring ring-gray-300 disabled:opacity-25 transition ease-in-out duration-150" x-on:click="close_modal">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 -ml-1 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            Cancel
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,48 @@
+<nav  class="fixed inset-0 duration-300 transform lg:transform-none lg:opacity-100 z-20 w-20 bg-gray-800 text-white h-screen p-3 overflow-x-hidden overflow-y-auto"
+        :class="{'translate-x-0 ease-in opacity-100': open == true, '-translate-x-full ease-out opacity-0' : open == false }">
+        <div class="flex justify-between">
+            <a class="flex items-center" href="">
+                <img src="{{ url_for('static', filename="/img/logo2.png") }}" alt="" class="cursor-pointer w-14 h-14">
+                <!-- <span class="font-bold text-2x1 sm:text-3x1 px-1 text-yellow-300">Code</span><span class="font-bold text-green-300 text-2x1 sm:text-3x1">Ninja</span> -->
+            </a>
+        </div>
+        {{ breadcrumb }}
+        <ul class="mt-5">
+            <li class="">
+                <a href="/dashboard" class=" transition duration-500 ease-in-out flex block py-2 hover:bg-gray-700 hover:bg-opacity-50 hover:text-green-100 rounded-md items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                    </svg>
+                </a>
+            </li>
+            <li class="">
+                <a href="" class=" active:bg-green-700 transition duration-500 ease-in-out flex block py-2 hover:bg-gray-700 hover:bg-opacity-50 hover:text-green-100 rounded-md items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                    </svg>
+                </a>
+            </li>
+            <li class="">
+                <a href="" class=" active:bg-green-700 transition duration-500 ease-in-out flex block py-2 hover:bg-gray-700 hover:bg-opacity-50 hover:text-green-100 rounded-md items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
+                </a>
+            </li>
+            <li class="">
+                <a href="/upload" class=" active:bg-green-700 transition duration-500 ease-in-out flex block py-2 hover:bg-gray-700 hover:bg-opacity-50 hover:text-green-100 rounded-md items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                    </svg>
+                </a>
+            </li>
+        </ul>
+
+        <!-- <div>
+            <button class="p-2 focus:outline-none focus:bg-gray-700 hover:bg-gray-700 rounded-md lg:hidden" @click="open = false">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                </svg>
+            </button>
+        </div> -->
+    </nav>

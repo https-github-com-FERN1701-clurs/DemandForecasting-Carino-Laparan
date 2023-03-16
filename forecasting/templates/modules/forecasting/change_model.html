@@ -1,0 +1,102 @@
+<div class="flex items-center justify-center bg-gray-400 bg-opacity-50 mx-auto overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 w-full md:inset-0 px-2 pt-2 h-screen" style="display: none" x-show="show_change_model">
+    <div class="flex flex-col relative w-full max-w-lg rounded-lg">
+        <!-- MODAL -->
+        <div class="relative w-full max-w-lg h-full md:h-auto bg-white rounded-lg">
+            <!-- Modal content -->
+            <div class="bg-white rounded-lg shadow dark:bg-gray-700 w-full">
+                <div class="pt-3 pl-2 pb-3 bg-yellow-100 rounded-t-lg">
+                    <h3 class="text-xl font-medium text-gray-700 dark:text-white">
+                        Change Model
+                    </h3>
+                </div>
+                <button type="button" class="absolute top-3 right-2.5 text-yellow-200 bg-transparent hover:bg-yellow-400 hover:text-yellow-200 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-800 dark:hover:text-white" x-on:click="show_change_model = false, $refs.f_model.value = '', $refs.f_training_data.value = '', show_model_list = false, $refs.f_model_accuracy.value = '', current_model_retrained = ''">
+                    <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                    <span class="sr-only">Close modal</span>
+                </button>
+            </div>
+            <div class="px-2 flex flex-col space-y-2">
+
+                <div class="flex flex-row pt-3">
+                    <span class="text-sm text-gray-400 pr-3">Current Algorithm: </span>
+                    <template x-if="current_model == ''">
+                        <span><span class="text-sm text-gray-700 rounded-md bg-green-200 font-bold text-center px-2 py-1">{{ current_model }}</span><span class="ml-2 text-sm text-gray-700 rounded-md bg-yellow-200 font-bold text-center px-2 py-1">{{ model_accuracy }}</span></span>
+                    </template>
+                    <template x-if="current_model">
+                        <span>
+                            <span class="text-sm text-gray-700 rounded-md bg-green-200 font-bold text-center px-2 py-1" x-text="current_model"></span>
+                            <span class="ml-2 text-sm text-gray-700 rounded-md bg-yellow-200 font-bold text-center px-2 py-1" x-text="current_model_accuracy"></span>
+                        </span>
+                    </template>
+                    
+                    
+                </div>
+                <div class="flex flex-col space-y-2">
+                    <div class="flex flex-col lg:flex-row space-x-0 lg:space-x-2 space-y-2 lg:space-y-0 lg:justify-end">
+                        <input type="text" id="algorithm_id" name="algorithm_id" x-ref="algorithm_id" hidden>
+                        <div class="flex flex-col w-full">
+                            <label for="f_model" class="text-xs text-gray-400">Algorithm</label>
+                            <div class="relative">
+                                <input class="w-full p-1 text-sm text-gray-700 rounded-lg shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" type="text" 
+                                id="f_model" name="f_model" x-ref="f_model" value="" placeholder="Select Model" autocomplete="off"
+                                x-on:click="show_model_list = !show_model_list" x-on:keyup="$refs.f_model.value = ''" x-on:click.outside="show_model_list = false"/>
+                                <div class="absolute top-9  z-20 max-h-32 overflow-y-auto bg-white rounded-md shadow-sm border border-gray-300"
+                                    x-show="show_model_list">
+                                    <template x-if="forecast_models">
+                                        <template x-for="models_record in forecast_models">
+                                            <div class="w-full justify-between inline-flex cursor-default transition duration-500 ease-in-out px-3 py-1 text-xs hover:bg-gray-300 hover:bg-opacity-50 hover:text-gray-900 items-center"
+                                            x-on:click="$refs.f_model.value = models_record.algorithm_name, $refs.f_training_data.value = models_record.training_data, $refs.algorithm_id.value = models_record.id, $refs.f_model_accuracy.value = models_record.model_accuracy, current_model_retrained = models_record.is_retrained">
+                                                <!-- <li x-text="product.product_description"  class="block"></li>
+                                                <span x-text="product.branch_id" class="text-xs rounded-md bg-yellow-100 text-center px-1"></span> -->
+                                                <li class="block" x-text="models_record.algorithm_name"></li>
+                                                <template x-if="models_record.is_used == 1">
+                                                    <span x-text="models_record.training_data" style="font-size: 0.60rem;" class="rounded-md bg-green-300 text-center px-1"></span>
+                                                </template>
+                                                <template x-if="models_record.is_used != 1">
+                                                    <span x-text="models_record.training_data" style="font-size: 0.60rem;" class="rounded-md bg-yellow-100 text-center px-1"></span>
+                                                </template>
+                                            </div>
+                                        </template>
+                                    </template>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex flex-col w-full lg:w-2/6">
+                            <label for="f_model_accuracy" class="text-xs text-gray-400">Model Accuracy</label>
+                            <div class="relative">
+                                <input class="w-full p-1 text-sm text-gray-700 rounded-lg shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" type="text" 
+                                id="f_model_accuracy" name="f_model_accuracy" x-ref="f_model_accuracy" value="" placeholder="Model Accuracy" autocomplete="off"
+                                disabled/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex flex-row w-full space-x-2">
+                        <div class="flex flex-col w-2/6">
+                            <label for="f_training_data" class="text-xs text-gray-400">Training Data</label>
+                            <div class="relative">
+                                <input class="w-full p-1 text-sm text-gray-700 rounded-lg shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" type="text" 
+                                id="f_training_data" name="f_training_data" x-ref="f_training_data" value="" placeholder="Training Data" autocomplete="off"
+                                disabled/>
+                            </div>
+                        </div>
+                        <div class="flex flex-col w-40">
+                            <label for="" class="text-xs text-gray-400">Retrained</label>
+                            <div class="relative bg-green-200 rounded-lg px-2 h-7" style="padding-top: 4px; padding-bottom: 4px;">
+                                <span class="text-sm text-gray-700 font-bold" x-text="current_model_retrained == '1' ? 'True' : (current_model_retrained == '0' ? 'False' : '')"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <button x-on:click="change_algorithm, show_change_model = false, $refs.f_model.value = '', $refs.f_training_data.value = '', show_model_list = false, $refs.f_model_accuracy.value = '', current_model_retrained = ''"
+                        x-ref="change_algorithm_btn"  
+                        type="button" class="w-auto mb-3 inline-flex items-center mt-2 px-4 py-1 bg-yellow-100 border border-transparent rounded-lg font-semibold text-xs text-gray-700 uppercase tracking-widest hover:bg-yellow-200 active:bg-gray-900 focus:outline-none focus:border-gray-900 focus:ring ring-gray-300 disabled:opacity-25 transition ease-in-out duration-150">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 -ml-1 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                        </svg>
+                        Save
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

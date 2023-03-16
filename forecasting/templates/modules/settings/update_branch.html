@@ -1,0 +1,80 @@
+<div class="flex items-center justify-center bg-gray-700 bg-opacity-70 mx-auto overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 w-full md:inset-0 h-screen px-2 pt-2" style="display: none" x-show="update_branch">
+    <div class="flex flex-col relative w-full max-w-lg rounded-lg">
+        <!-- Flask Error Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    {% if category == 'error' %}
+                        <div class="flex flex-row relative w-full max-w-lg h-full md:h-auto bg-white rounded-md mb-3 px-2 py-2 bg-red-100" x-show="flask_error">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="text-red-400 h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span class="text-red-400">{{ message }}!</span>
+                            <button type="button" class="top-3 right-2.5 text-gray-400 bg-transparent hover:bg-red-200 hover:text-red-400 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-800 dark:hover:text-white" x-on:click="flask_error = false">
+                                <svg aria-hidden="true" class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                                <span class="sr-only">Close modal</span>
+                            </button>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        <!-- Alpine Error Messages -->
+        <div class="flex flex-row relative w-full max-w-lg h-full md:h-auto bg-white rounded-md mb-3 px-2 py-2 bg-red-100" style="display: none" x-show="user_error">
+            <svg xmlns="http://www.w3.org/2000/svg" class="text-red-400 h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span class="text-red-400" x-text="user_error_message"></span>
+            <button type="button" class="top-3 right-2.5 text-gray-400 bg-transparent hover:bg-red-200 hover:text-red-400 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-800 dark:hover:text-white" x-on:click="user_error = false">
+                <svg aria-hidden="true" class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                <span class="sr-only">Close modal</span>
+            </button>
+        </div>
+
+        <!-- MODAL -->
+        <div class="relative w-full max-w-lg h-full md:h-auto bg-white rounded-lg">
+            <!-- Modal content -->
+            <div class="bg-white rounded-lg shadow dark:bg-gray-700 w-full">
+                <div class="pt-3 pl-2 pb-3 bg-green-400 rounded-t-lg">
+                    <h3 class="text-xl font-medium text-white dark:text-white">
+                        Update Branch
+                    </h3>
+                </div>
+                {% if new_branch == 'true'  %}
+                    <a href="{{ url_for('views.settings') }}" class="absolute top-3 right-2.5 text-green-200 bg-transparent hover:bg-green-200 hover:text-green-400 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-800 dark:hover:text-white">
+                        <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                        <span class="sr-only">Close modal</span>
+                    </a>
+                {% else %}
+                    <button type="button" class="absolute top-3 right-2.5 text-green-200 bg-transparent hover:bg-green-200 hover:text-green-400 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-800 dark:hover:text-white" x-on:click="update_branch = false">
+                        <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                        <span class="sr-only">Close modal</span>
+                    </button>
+                {% endif %}
+            </div>
+            <form action="{{ url_for('views.update_branch') }}" method="POST">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                <input type="number" x-ref="u_id" id="u_id" name="u_id" value="{{ prev.u_id if prev }}" hidden>
+                <div class="m-2 p-2 mt-3 flex flex-col space-y-2">
+                    <div class="flex flex-col lg:flex-row space-x-0 lg:space-x-2 space-y-2 lg:space-y-0">
+                        <input class="w-1/4 bg-yellow-50 text-sm rounded-lg shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" type="number" x-ref="u_branch_id" id="u_branch_id" name="branch_id" value="{{ prev.branch_id if prev }}" placeholder="Branch ID" autocomplete="off" />
+                    </div>
+                    <div class="flex flex-col lg:flex-row space-x-0 lg:space-x-2 space-y-2 lg:space-y-0">
+                        <input class="w-full text-sm rounded-lg shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" type="text" x-ref="u_branch_description" id="u_branch_description" name="branch_description" value="{{ prev.branch_description if prev }}" placeholder="Branch Description" autocomplete="off" required />
+                    </div>
+                    <div class="flex flex-col lg:flex-row space-x-0 lg:space-x-2 space-y-2 lg:space-y-0">
+                        <input class="w-full text-sm rounded-lg shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" type="text" x-ref="u_branch_address" id="u_branch_address" name="branch_address" value="{{ prev.branch_address if prev }}" placeholder="Branch Address" autocomplete="off" required />
+                    </div>
+                    <div>
+                        <button x-ref="update" x-on:click="submit_update_branch" type="button" class="inline-flex items-center px-4 py-2 bg-green-500 border border-transparent rounded-lg font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-400 active:bg-gray-900 focus:outline-none focus:border-gray-900 focus:ring ring-gray-300 disabled:opacity-25 transition ease-in-out duration-150">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 -ml-1 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            Save
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

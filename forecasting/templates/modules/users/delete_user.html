@@ -1,0 +1,89 @@
+<div class="flex items-center justify-center bg-gray-700 bg-opacity-70 mx-auto overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 w-full md:inset-0 px-2 pt-2 h-screen" style="display: none" x-show="delete_user">
+    <div class="flex flex-col relative w-full max-w-lg rounded-lg">
+        <!-- MODAL -->
+        <div class="relative w-full max-w-lg h-full md:h-auto bg-white rounded-lg">
+            <!-- Modal content -->
+            <div class="bg-white rounded-lg shadow dark:bg-gray-700 w-full">
+                <div class="pt-3 pl-2 pb-3 bg-red-400 rounded-t-lg">
+                    <h3 class="text-xl font-medium text-white dark:text-white">
+                        Confirm Delete
+                    </h3>
+                </div>
+                <button type="button" class="absolute top-3 right-2.5 text-red-200 bg-transparent hover:bg-red-200 hover:text-red-400 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-800 dark:hover:text-white" x-on:click="close_modal">
+                    <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                    <span class="sr-only">Close modal</span>
+                </button>
+            </div>
+            <!--<div class="m-2 p-2 mt-3 flex flex-col space-y-2">-->
+            <div class="flex flex-col space-y-2">
+                <div class="text-gray-900 flex flex-row items-center bg-gray-100">
+                    <div class="m-3 mt-3 h-16 w-16 rounded-full border-2 border-gray-200 bg-red-200">
+                        <img class="rounded-full" :src="avatar" />
+                    </div>
+                    <div class="flex flex-col border-r-2 border-gray-200 pr-10">
+                        <span x-text="account_name" class="text-lg font-bold text-green-400"></span>
+                        <span x-text="account_type" class="text-md text-gray-400"></span>
+                    </div>
+                    <div class="flex flex-col items-center pl-10">
+                        <span class="text-lg font-bold text-gray-400">Account Status</span>
+                        <span x-text="account_status" class="rounded-md text-white text-center px-3" :class="[account_status == 'Active' ? 'bg-green-400 w-20' : 'bg-red-400 w-20']"  ></span>
+                    </div>
+                </div>
+                <div class="flex flex-col lg:flex-row space-x-0 lg:space-x-2 space-y-2 lg:space-y-0 mx-3">
+                    <input class="w-full text-sm rounded-lg shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" type="text" id="d_first_name" name="first_name" x-ref="d_first_name" placeholder="First Name" disabled hidden />
+                    <input class="w-full text-sm rounded-lg shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" type="text" id="d_middle_name" name="middle_name" x-ref="d_middle_name" value="" placeholder="Middle Name" disabled hidden />
+                </div>
+                <div class="flex flex-col lg:flex-row space-x-0 lg:space-x-2 space-y-2 lg:space-y-0 mx-3">
+                    <div>
+                        <input class="w-full text-sm rounded-lg shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" type="text" id="d_last_name" name="last_name" x-ref="d_last_name" value="" placeholder="Last Name" disabled hidden />
+                    </div>
+                </div>
+                <div class="flex flex-row space-x-0 lg:space-x-2 space-y-2 lg:space-y-0 mx-3 justify-center">
+                    <div class="py-7">
+                        <h2 class="font-bold text-gray-400 text-center">
+                            Are you sure you want to delete this account?
+                        </h2>
+                    </div>
+                </div>
+                <!--<div class="flex flex-col lg:flex-row space-x-0 lg:space-x-2 space-y-2 lg:space-y-0 mx-3">
+                    <div class="w-full">
+                        <label for="email" class="block text-sm font-medium text-gray-900 dark:text-gray-300">Address</label>
+                        <input class="w-full text-sm rounded-lg shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" type="text" id="v_address" name="address" x-ref="v_address" value="" placeholder="Address" disabled />
+                    </div>
+                </div>
+                <div class="flex flex-col lg:flex-row space-x-0 lg:space-x-2 space-y-2 lg:space-y-0 mx-3">
+                    <div class="flex flex-col w-full">
+                        <label for="email" class="block text-sm font-medium text-gray-900 dark:text-gray-300">Contact Number</label>
+                        <input class="w-full text-sm rounded-lg shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" type="number" id="v_contact_number" name="contact_number" x-ref="v_contact_number" value="" placeholder="Contact Number" disabled />
+                    </div>
+                    <div class="flex flex-col w-full">
+                        <label for="email" class="block text-sm font-medium text-gray-900 dark:text-gray-300">Email</label>
+                        <input class="w-full text-sm rounded-lg shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" type="email" id="v_email" name="email" x-ref="v_email" value="" placeholder="Email" disabled />
+                    </div>
+                </div> -->
+                <!--<div class="flex flex-col lg:flex-row space-x-0 lg:space-x-2 space-y-2 lg:space-y-0">
+                    <input class="w-full text-sm rounded-lg shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" type="password" id="v_password" name="password" x-ref="v_password" value="" placeholder="Password" disabled />
+                    <input class="w-full text-sm rounded-lg shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" type="password" id="v_confirm_password" name="confirm_password" x-ref="v_confirm_password" value="" placeholder="Confirm Password" disabled />
+                </div>-->
+                <form action="{{ url_for('views.delete_users') }}" method="POST" class="mx-auto">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                    <input id="d_user_id" name="user_id" x-ref="d_user_id" hidden>
+                    <div class="mx-auto py-3">
+                        <button type="submit" class="inline-flex items-center px-4 py-2 bg-red-400 border border-transparent rounded-lg font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-400 active:bg-gray-900 focus:outline-none focus:border-gray-900 focus:ring ring-gray-300 disabled:opacity-25 transition ease-in-out duration-150" x-on:click="close_modal">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 -ml-1 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            Confirm
+                        </button>
+                        <button type="button" class="inline-flex items-center px-4 py-2 bg-gray-500 border border-transparent rounded-lg font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 active:bg-gray-900 focus:outline-none focus:border-gray-900 focus:ring ring-gray-300 disabled:opacity-25 transition ease-in-out duration-150" x-on:click="close_modal">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 -ml-1 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            Cancel
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

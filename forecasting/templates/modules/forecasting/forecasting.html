@@ -1,0 +1,877 @@
+{% extends 'layout/navigation.html' %}
+{% block title %} Forecasting | Demand Forecasting {% endblock %}
+{% block breadcrumb %}
+    Forecasting
+{% endblock %}
+{% block module %}
+    <!-- <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 3000)">
+        <h1>Welcome from Forecasting</h1>
+    </div> -->
+    <div class="w-full " x-data="forecast" x-init="frequency_flag_main = 'Weeks'">
+        <div class="inline-flex rounded-md shadow-sm z-10 mt-3" role="group">
+            <button x-on:click="selected_tab('select_product')" type="button" class="py-1 relative text-sm font-medium text-gray-900 bg-white rounded-tl-lg border border-gray-200 hover:bg-green-100 hover:text-green-900"
+                :class="[show_select_products == true ? 'bg-green-50 text-green-900 hover:bg-green-100 hover:text-green-400 focus:bg-green-50 focus:text-green-900' : '']">
+                <span class="py-1 px-4">Select Product</span>
+                <div class="w-full absolute bottom-0" :class="[show_select_products == true ? 'bg-green-500' : '']" style="height: 2px;"></div>
+            </button>
+            <button x-on:click="selected_tab('all_product')" x-init="all_forecasts" type="button" class="py-1 relative text-sm font-medium text-gray-900 bg-white border-r border-b border-gray-200 hover:bg-green-100 hover:text-green-900"
+            :class="[show_all_products == true ? 'bg-green-50 text-green-900 hover:bg-green-100 hover:text-green-400 focus:bg-green-50 focus:text-green-900' : '']">
+                <span class="py-1 px-4">All Product</span>
+                <div class="w-full absolute bottom-0" :class="[show_all_products == true ? 'bg-green-500' : '']" style="height: 2px;"></div>
+            </button>
+            <button x-on:click="selected_tab('all_model')" type="button" class="py-1 relative text-sm font-medium text-gray-900 bg-white rounded-tr-lg border-r border-b border-gray-200 hover:bg-green-100 hover:text-green-900"
+            :class="[show_validation == true ? 'bg-green-50 text-green-900 hover:bg-green-100 hover:text-green-400 focus:bg-green-50 focus:text-green-900' : '']">
+                <span class="py-1 px-4">Validation</span>
+                <div class="w-full absolute bottom-0" :class="[show_validation == true ? 'bg-green-500' : '']" style="height: 2px;"></div>
+            </button>
+        </div>
+        <div class="bg-gray-200 w-full bottom-0 z-0" style="height: 2px; margin-top: -2px;"></div>
+
+        {% include 'modules/forecasting/select_product.html' %}
+        {% include 'modules/forecasting/all_products.html' %}
+        {% include 'modules/forecasting/validation.html' %}
+        
+        <div class="flex items-center h-full bg-gray-200 bg-opacity-20 justify-center m-auto overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 w-full md:inset-0 px-2 pt-2" style="display: none" x-show="loading">
+            <div class="flex flex-col justify-center w-full max-w-lg rounded-lg" x-show="error_from_alpine_js == ''">
+                <div class="flex flex-col justfy-center items-center">
+                    <p class="leading-tight text-xs md:text-sm text-center">
+                        <span class="text-gray-900 font-bold text-lg">Processing Data</span>
+                    </p>
+                    <img src="{{ url_for('static', filename="/img/spinner.png") }}" alt="" class="animate-spin w-7 h-7 mx-auto">
+                </div>
+            </div>
+            <div class="flex flex-col justify-center w-full max-w-lg rounded-lg" x-show="error_from_alpine_js" >
+                <div class="flex flex-col justfy-center items-center">
+                    <p class="leading-tight text-xs md:text-sm text-center">
+                        <span class="text-gray-900 font-bold text-md" x-text="error_from_alpine_js"></span>
+                    </p>
+                    <img src="{{ url_for('static', filename="/img/nodata.png") }}" alt="" class="w-12 h-12 mx-auto">
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- <script src="https://unpkg.com/flowbite@1.5.3/dist/datepicker.js"></script> -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        let main_graph = null;
+        let product_graph = [];
+        let validation_graph = [];
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('forecast', () => ({
+                'products': {{products|safe}},
+                'show_products': false,
+                'suggestions': false,
+                'filtered_products': [],
+                'branches': {{branches|safe}},
+
+                //Compare
+                'show_products_comp': false,
+                'product_code_comp': '',
+                'branch_id_comp': '',
+                'suggestions_comp': false,
+                //Compare
+
+                //'dataset': ,
+                'future_weeks': 0,
+
+                'product_code': '',
+                'branch_id': '',
+                'loading': false,
+
+                //Error from AlpineJS
+                'error_from_alpine_js': '',
+                //Error from AlpineJS
+
+                //UI variables
+                'show_select_products': false,
+                'show_all_products': false,
+                'show_validation': true,
+                //UI variables
+
+                'frequency': '',
+                'error_message': '',
+                'show_fd2': false,
+
+                //all forecast
+                'all_forecasts': {{all_forecasts|safe}},
+                'product_branch_id': '',
+                'chart_id': 0,
+                'canvas_graph': '',
+                'frequency_flag_main': '',
+
+                //vaildation
+                'show_products_fv': false,
+                'product_code_fv': false,
+                'suggestions_fv': false,
+                'branch_id_fv': '',
+                'model_validations': [],
+
+                selected_tab(tab_){
+                    if (tab_ == 'select_product'){
+                        this.show_select_products = true;
+                        this.show_all_products = false;
+                        this.show_validation = false;
+                    }
+                    else if (tab_ == 'all_product'){
+                        this.show_select_products = false;
+                        this.show_all_products = true;
+                        this.show_validation = false;
+                    }
+                    else if (tab_ == 'all_model'){
+                        this.show_select_products = false;
+                        this.show_all_products = false;
+                        this.show_validation = true;
+                    }
+                },
+                show_suggestions(){
+                    if(this.$refs.f_product.value == '' ){
+                        this.$refs.f_branch.value = '';
+                    }
+                    this.suggestions = true;
+
+                    this.filtered_products = [];
+                    var fl = {{products|safe}};
+                    var index = 0;
+                    for (const key in fl) {
+                        if (Object.hasOwnProperty.call(fl, key)) {
+                            const element = fl[key];
+                            const x = element.product_description;
+                            let result = x.toLowerCase().includes(this.$refs.f_product.value.toLowerCase());
+                            if(result){
+                                this.filtered_products[index] = element;
+                                index++;
+                            }
+                        }
+                    }
+                },
+                show_suggestions_comp(){
+                    this.suggestions_comp = true;
+
+                    this.filtered_products = [];
+                    var fl = {{products|safe}};
+                    var index = 0;
+                    for (const key in fl) {
+                        if (Object.hasOwnProperty.call(fl, key)) {
+                            const element = fl[key];
+                            const x = element.product_description;
+                            let result = x.toLowerCase().includes(this.$refs.f_product_comp.value.toLowerCase());
+                            if(result){
+                                this.filtered_products[index] = element;
+                                index++;
+                            }
+                        }
+                    }
+                },
+                show_suggestions_fv(){
+                    this.suggestions_fv = true;
+
+                    this.filtered_products = [];
+                    var fl = {{products|safe}};
+                    var index = 0;
+                    for (const key in fl) {
+                        if (Object.hasOwnProperty.call(fl, key)) {
+                            const element = fl[key];
+                            const x = element.product_description;
+                            let result = x.toLowerCase().includes(this.$refs.fv_product.value.toLowerCase());
+                            if(result){
+                                this.filtered_products[index] = element;
+                                index++;
+                            }
+                        }
+                    }
+                },
+                get_branch_name(branch_id){
+                    this.$refs.f_branch.value = '';
+                    this.branch_id = branch_id;
+                    for (const key in this.branches) {
+                        if (Object.hasOwnProperty.call(this.branches, key)) {
+                            const element = this.branches[key];
+                            const x = element.branch_id;
+                            if(x == branch_id){
+                                this.$refs.f_branch.value = element.branch_description;
+                                break;
+                            }
+                        }
+                    }
+
+                },
+                get_branch_name_fv(branch_id){
+                    this.$refs.fv_branch.value = '';
+                    this.branch_id_fv = branch_id;
+                    for (const key in this.branches) {
+                        if (Object.hasOwnProperty.call(this.branches, key)) {
+                            const element = this.branches[key];
+                            const x = element.branch_id;
+                            if(x == branch_id){
+                                this.$refs.fv_branch.value = element.branch_description;
+                                break;
+                            }
+                        }
+                    }
+
+                },
+                forecast(){
+                    if(this.$refs.f_start_date.value && this.$refs.f_end_date.value && this.product_code && this.branch_id){
+                        this.loading = true;
+                        this.show_fd2 = false;
+
+                        let form = new FormData;
+                        form.append('product_code', this.product_code);
+                        form.append('branch_id', this.branch_id);
+                        form.append('start_date', this.$refs.f_start_date.value);
+                        form.append('end_date', this.$refs.f_end_date.value);
+                        form.append('product_name', this.$refs.f_product.value);
+
+                        axios.post('/forecast_data', form)
+                        .then((response) => {
+                            //console.log(response.data);
+                            this.frequency = 'weekly';
+                            this.display_graph(response.data);
+                        },
+                        (error) => {
+                            //console.log(error);
+                            this.error_from_alpine_js = error /*'Something went wrong!'*/;
+                        });
+                    }
+                    else {
+                        this.error_message = 'Start Date, End Date and Product Field are required!';
+                        setTimeout(() => {
+                            this.error_message = '';
+                        }, 3000);
+                    }
+                },
+                display_graph(predictions){
+                    if(main_graph!=null){
+                        main_graph.destroy();
+                    }
+                    this.frequency_flag_main = '';
+                    this.$refs.frequency_flag.innerText = ((this.frequency == 'weekly' ? 'Weeks' : (this.frequency == 'monthly' ? 'Months' : (this.frequency == 'quarterly' ? 'Quarters' : (this.frequency == 'yearly' ? 'Years' :'')))));
+
+                    const pred_date_length = (Object.values(predictions['prediction_date'])).length;
+                    const pred_product_length = (Object.values(predictions['quantity'])).length;
+                    
+                    this.$refs.fd_product_name.innerText = predictions['product_name'];
+                    this.$refs.fd_forecasted_weeks.innerText = predictions['forecasted_weeks'] + (this.frequency == '' ? '' : (this.frequency == 'weekly' ? ' Weeks' : (this.frequency == 'monthly' ? ' Months' : (this.frequency == 'quarterly' ? ' Quarters' : (this.frequency == 'yearly' ? ' Years' :'')))));
+                    this.$refs.fd_estimated_sales.innerText = ('₱ ' + (predictions['estimated_sales']).toLocaleString());
+                    this.$refs.fd_estimated_revenue.innerText = ('₱ ' + (predictions['estimated_revenue']).toLocaleString());
+
+                    var forecast_dates = [];
+                    for(let i = 0; i < pred_date_length; i++){
+                        forecast_dates[i] = predictions['prediction_date'][i];
+                    }
+
+                    var forecast_quantity = [];
+                    for(let i = 0; i < pred_product_length; i++){
+                        forecast_quantity[i] = predictions['quantity'][i];
+                    }
+
+                    var cht = document.getElementById('predictions_chart').getContext('2d');
+                    //const gradient = cht.createLinearGradient(0,0,0, 400);
+                    //gradient.addColorStop(0, 'lime');
+                    //gradient.addColorStop(0.5, 'lime');
+                    //gradient.addColorStop(1, 'black');
+
+
+                    main_graph = new Chart(cht, {
+                        type: 'line',
+                        data: {
+                            labels: this.date_formatter(forecast_dates),
+                            datasets: [{
+                                label: this.$refs.f_product.value,
+                                backgroundColor: this.color_generator(0.2),
+                                borderColor: this.color_generator(1),
+                                pointBackgroundColor: this.color_generator(1),
+                                data: this.floor_quantity(forecast_quantity),
+                                borderWidth: 1.5,
+                                tension: 0.3,
+                                fill: true,
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            title: {
+                                display: true,
+                                text: 'Item Something'
+                            },
+                            plugins: {
+                                legend: false,
+                                tooltip: true,
+                            },
+                            hover: {
+                                mode: 'index',
+                                intersect: true
+                            },
+                            scales: {
+                                x: {
+                                  grid: {
+                                    display: true
+                                  }
+                                },
+                                y: {
+                                  grid: {
+                                    display: false
+                                  }
+                                }
+                            }
+                        }
+                    });
+                    this.loading = false;
+                },
+                display_compare_graph(predictions_data){
+                    if(main_graph!=null){
+                        main_graph.destroy();
+                    }
+
+                    //var compare_data = Object.values(predictions_data);
+
+                    this.frequency_flag_main = '';
+                    this.$refs.frequency_flag.innerText = ((this.frequency == 'weekly' ? 'Weeks' : (this.frequency == 'monthly' ? 'Months' : (this.frequency == 'quarterly' ? 'Quarters' : (this.frequency == 'yearly' ? 'Years' :'')))));
+                    this.$refs.frequency_flag2.innerText = ((this.frequency == 'weekly' ? 'Weeks' : (this.frequency == 'monthly' ? 'Months' : (this.frequency == 'quarterly' ? 'Quarters' : (this.frequency == 'yearly' ? 'Years' :'')))));
+
+                    const pred_date_length = (Object.values(predictions_data['forecasted_dates'])).length;
+                    const pred_product1_length = (Object.values(predictions_data['forecasted_dates'])).length;
+                    const pred_product2_length = (Object.values(predictions_data['forecasted_dates'])).length;
+
+                    var compare_dates = [];
+                    for(let i = 0; i < pred_date_length; i++){
+                        compare_dates[i] = predictions_data['forecasted_dates'][i];
+                    }
+
+                    var quantity_product1 = [];
+                    for(let i = 0; i < pred_product1_length; i++){
+                        quantity_product1[i] = predictions_data['quantity_1'][i];
+                    }
+
+                    var quantity_product2 = [];
+                    for(let i = 0; i < pred_product2_length; i++){
+                        quantity_product2[i] = predictions_data['quantity_2'][i];
+                    }
+
+                    const product_names = Object.values(predictions_data['product_names']);
+                    const forecasted_weeks = Object.values(predictions_data['forecasted_weeks']);
+                    const estimated_sales = Object.values(predictions_data['estimated_sales']);
+                    const estimated_revenue = Object.values(predictions_data['estimated_revenue']);
+
+                    // Main Product
+                    this.$refs.fd_product_name.innerText = product_names[0];
+                    this.$refs.fd_forecasted_weeks.innerText = forecasted_weeks[0] + (this.frequency == '' ? '' : (this.frequency == 'weekly' ? ' Weeks' : (this.frequency == 'monthly' ? ' Months' : (this.frequency == 'quarterly' ? ' Quarters' : (this.frequency == 'yearly' ? ' Years' :'')))));
+                    this.$refs.fd_estimated_sales.innerText = ('₱ ' + (estimated_sales[0]).toLocaleString());
+                    this.$refs.fd_estimated_revenue.innerText = ('₱ ' + (estimated_revenue[0]).toLocaleString());
+
+                    // Branch Product
+                    this.$refs.fd2_product_name.innerText = product_names[1];
+                    this.$refs.fd2_forecasted_weeks.innerText = forecasted_weeks[1] + (this.frequency == '' ? '' : (this.frequency == 'weekly' ? ' Weeks' : (this.frequency == 'monthly' ? ' Months' : (this.frequency == 'quarterly' ? ' Quarters' : (this.frequency == 'yearly' ? ' Years' :'')))));
+                    this.$refs.fd2_estimated_sales.innerText = ('₱ ' + (estimated_sales[1]).toLocaleString());
+                    this.$refs.fd2_estimated_revenue.innerText = ('₱ ' + (estimated_revenue[1]).toLocaleString());
+
+                    if(product_names[1]){
+                        this.show_fd2 = true;
+                    }
+
+                    var chrt = document.getElementById('predictions_chart').getContext('2d');
+
+                    // data
+                    const compare_data = {
+                        labels: this.date_formatter(compare_dates),
+                        datasets: [{
+                            label: this.$refs.f_product.value,
+                            backgroundColor: this.color_generator(0.2),
+                            borderColor: this.color_generator(1),
+                            pointBackgroundColor: this.color_generator(1),
+                            data: quantity_product1,
+                            borderWidth: 1.5,
+                            tension: 0.3,
+                            fill: true,
+                        },
+                        {
+                            label: this.$refs.f_product_comp.value + (this.branch_id == 1 && this.branch_id_comp == 2 ? ' (Branch 2)' : ''),
+                            backgroundColor: this.color_generator(0.2),
+                            borderColor: this.color_generator(1),
+                            pointBackgroundColor: this.color_generator(1),
+                            data: quantity_product2,
+                            borderWidth: 1.5,
+                            tension: 0.3,
+                            fill: true,
+                        }]
+                    };
+
+                    // configuration
+                    const config = {
+                        type: 'line',
+                        data: compare_data,
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            title: {
+                                display: true,
+                                text: 'Item Something'
+                            },
+                            plugins: {
+                                legend: true,
+                                tooltip: true,
+                            },
+                            hover: {
+                                mode: 'index',
+                                intersect: true
+                            },
+                            scales: {
+                                x: {
+                                  grid: {
+                                    display: true
+                                  }
+                                },
+                                y: {
+                                  grid: {
+                                    display: false
+                                  }
+                                }
+                            }
+                        }
+                    };
+
+                    // Render
+                    main_graph = new Chart(
+                        chrt,
+                        config
+                    );
+
+                },
+                change_frequency(){
+                    if(this.product_code && this.branch_id && this.frequency){
+                        this.loading = true;
+                        let form = new FormData;
+                        form.append('product_code', this.product_code);
+                        form.append('branch_id', this.branch_id);
+                        form.append('start_date', this.$refs.f_start_date.value);
+                        form.append('end_date', this.$refs.f_end_date.value);
+                        form.append('frequency', this.frequency);
+                        form.append('product_name', this.$refs.f_product.value);
+
+                        axios.post('/change_frequency', form)
+                        .then((response) => {
+                            //console.log(response.data);
+                            this.display_graph(response.data);
+                            this.loading = false;
+                        },
+                        (error) => {
+                            //console.log(error);
+                            this.error_from_alpine_js = error /*'Something went wrong!'*/;
+                        });
+                    }
+                    else {
+                        this.error_message = 'Product Field and Frequency are required!';
+                        setTimeout(() => {
+                            this.error_message = '';
+                        }, 3000);
+                    }
+                },
+                compare_products(){
+                    if(this.product_code && this.branch_id && this.frequency && this.product_code_comp && this.branch_id_comp){
+                        this.loading = true;
+                        let form = new FormData;
+                        form.append('product_code', this.product_code);
+                        form.append('branch_id', this.branch_id);
+                        form.append('product_name', this.$refs.f_product.value);
+                        
+                        form.append('product_code_comp', this.product_code_comp);
+                        form.append('branch_id_comp', this.branch_id_comp);
+                        form.append('product_name_comp', this.$refs.f_product_comp.value);
+
+                        form.append('frequency', this.frequency);
+
+                        axios.post('/compare_products', form)
+                        .then((response) => {
+                            //console.log(response.data);
+                            this.display_compare_graph(response.data);
+                            this.loading = false;
+                        },
+                        (error) => {
+                            //console.log(error);
+                            this.error_from_alpine_js = error /*'Something went wrong!'*/;
+                        });
+                    }
+                    else {
+                        this.error_message = 'Please fill up required fields';
+                        setTimeout(() => {
+                            this.error_message = '';
+                        }, 3000);
+                    }
+                },
+                date_formatter(date_input){
+                    const MONTH_SHORT_NAMES = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+                    var time_series = [];
+                    for(var i=0; i < date_input.length; i++) {
+                        var date_object = new Date(date_input[i]);
+                        var month = date_object.getMonth();
+                        var day = date_object.getDate();
+                        var year = date_object.getFullYear();
+    
+                        if (day.toString().length < 2) 
+                            day = '0' + day;
+
+                        //time_series[i] = (MONTH_SHORT_NAMES[month]+'-'+day+'-'+ year);
+                        time_series[i] = (MONTH_SHORT_NAMES[month]+' '+day+' '+ year);
+                    }
+                    return time_series;
+                },
+                color_generator(opacity){
+                    var x = Math.floor(Math.random() * 256);
+                    var y = Math.floor(Math.random() * 256);
+                    var z = Math.floor(Math.random() * 256);
+                    var bgColor = "rgba(" + x + "," + y + "," + z + "," + opacity +")";
+
+                    return bgColor;
+                    /*var x = Math.floor(Math.random() * 256);
+                    var y = Math.floor(Math.random() * 256);
+                    var z = Math.floor(Math.random() * 256);
+
+                    var borderColor = "rgb(" + x + "," + y + "," + z + ")";*/
+                },
+                estimated_sales(forecasts_object){
+                    //const p_dates = Object.values(product_data[2]);
+                    var qty = (Object.values(forecasts_object['product_data']));
+                    //console.log(qty);
+                    var qty_total = 0;
+                    for(var i=0; i<qty.length; i++){
+                        qty_total = parseInt(qty_total) + parseInt(qty[i]);
+                    }
+
+                    return ('₱ ' + (qty_total * forecasts_object['product_price']).toLocaleString());
+                },
+                estimated_revenue(forecasts_object){
+                    var qty = (Object.values(forecasts_object['product_data']));
+                    //console.log(qty);
+                    var qty_total = 0;
+                    for(var i=0; i<qty.length; i++){
+                        qty_total = parseInt(qty_total) + parseInt(qty[i]);
+                    }
+
+                    return ('₱ ' + ((qty_total * forecasts_object['product_price']) - (qty_total *forecasts_object['product_cost'])).toLocaleString());
+                },
+                number_of_weeks(forecasts_object){
+                    const p_weeks = Object.keys(forecasts_object['product_data']);
+                    return p_weeks.length +' Weeks';
+                },
+                process_allproducts(forecasts_object, canvas_id, index){
+                    if(product_graph[index]!=null){
+                        product_graph[index].destroy();
+                    }
+                    const product_data = Object.values(forecasts_object);
+                    
+                    //const chart_id = (product_data[0]).toString() + (product_data[1]).toString();
+                    //var chrt2 = document.getElementById(canvas_id).getContext('2d');
+
+                    const p_dates = Object.keys(product_data[2]);
+                    const p_quantity = Object.values(product_data[2]);
+                    
+                    // Data
+                    const p_data = {
+                        labels: this.date_formatter(p_dates),
+                        datasets: [{
+                            label: product_data[3] + ' (Branch ' + product_data[1] +')',
+                            backgroundColor: this.color_generator(0.2),
+                            borderColor: this.color_generator(1),
+                            pointBackgroundColor: this.color_generator(1),
+                            data: p_quantity,
+                            borderWidth: 1.5,
+                            tension: 0.3,
+                            fill: true,
+                        }]
+                    };
+
+                    // COnfig
+                    const config = {
+                        type: 'line',
+                        data: p_data,
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            title: {
+                                display: true,
+                                text: 'Item Something'
+                            },
+                            plugins: {
+                                legend: false,
+                                tooltip: true,
+                            },
+                            hover: {
+                                mode: 'index',
+                                intersect: true
+                            },
+                            scales: {
+                                x: {
+                                  grid: {
+                                    display: true
+                                  }
+                                },
+                                y: {
+                                  grid: {
+                                    display: false
+                                  }
+                                }
+                            }
+                        }
+                    };
+                    
+                    // Chart
+                    var chrt1 = document.getElementById(canvas_id).getContext('2d');
+                    // Render
+                    product_graph[index] = new Chart(
+                        chrt1,
+                        config
+                    );
+
+                    //return product_data[0];
+
+                    /*
+                    var chrt1 = document.getElementById(canvas_id).getContext('2d');
+                    // Render
+                    product_graph[index] = new Chart(
+                        chrt1,
+                        config
+                    );*/
+                },
+                genenerate_id(forecasts_object){
+                    //const product_data = Object.values(forecasts_object);
+                    return '_'+(forecasts_object['product_code']).toString() + (forecasts_object['branch_id']).toString();
+                },
+                genenerate_validation_id(index){
+                    return '_'+index;
+                },
+                get_algorithm_name(validation_data){
+                    //console.log(validation_data);
+                    return validation_data['algorithm_name'];
+                },
+                change_frequency_ap(frequency, product_data, index, canvas_id){
+                    this.loading = true;
+                    let form = new FormData;
+                    const product_object = Object.values(product_data);
+
+                    form.append('frequency', frequency);
+                    form.append('product_data_dates', Object.keys(product_object[2]));
+                    form.append('product_data_quantity', Object.values(product_object[2]));
+                    form.append('product_code', product_data['product_code']);
+                    form.append('branch_id', product_data['branch_id']);
+                    axios.post('/change_frequency_ap', form)
+                    .then((response) => {
+                        //console.log(canvas_id);
+                        this.display_graph_ap(response.data, index, canvas_id);
+                    },
+                    (error) => {
+                        //console.log(error);
+                        this.error_from_alpine_js = error /*'Something went wrong!'*/;
+                    });
+                },
+                display_graph_ap(product_data, index, canvas_id){
+                    if(product_graph[index]!=null){
+                        product_graph[index].destroy();
+                    }
+                    //console.log(product_data['transaction_date']);
+                    
+                    // Data
+                    const p_data = {
+                        labels: this.date_formatter(product_data['transaction_date']),
+                        datasets: [{
+                            label: product_data['product_name'] + ' (Branch ' + product_data['branch_id'] +')',
+                            backgroundColor: this.color_generator(0.2),
+                            borderColor: this.color_generator(1),
+                            pointBackgroundColor: this.color_generator(1),
+                            data: product_data['quantity_sold'],
+                            borderWidth: 1.5,
+                            tension: 0.3,
+                            fill: true,
+                        }]
+                    };
+
+                    // COnfig
+                    const config = {
+                        type: 'line',
+                        data: p_data,
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            title: {
+                                display: true,
+                                text: 'Item Something'
+                            },
+                            plugins: {
+                                legend: false,
+                                tooltip: true,
+                            },
+                            hover: {
+                                mode: 'index',
+                                intersect: true
+                            },
+                            scales: {
+                                x: {
+                                  grid: {
+                                    display: true
+                                  }
+                                },
+                                y: {
+                                  grid: {
+                                    display: false
+                                  }
+                                }
+                            }
+                        }
+                    };
+
+                    
+                    //const canvas_id = '_'+product_data['product_code']+product_data['branch_id'];
+                    // Chart
+                    var chrt1 = document.getElementById(canvas_id).getContext('2d');
+                    // Render
+                    product_graph[index] = new Chart(
+                        chrt1,
+                        config
+                    );
+                    
+                    setTimeout(() => {
+                        this.loading = false;
+                    }, 500);
+                },
+                validate_data(){
+                    if(this.$refs.fv_product.value && this.$refs.fv_product.value){
+                        
+                        this.loading = true;
+
+                        let form = new FormData;
+                        form.append('product_code', this.product_code_fv);
+                        form.append('branch_id', this.branch_id_fv);
+                        form.append('product_name', this.$refs.fv_product.value);
+
+                        this.model_validations = [];
+                        axios.post('/model_validation', form)
+                        .then((response) => {
+                            //console.log(response.data);
+                            
+                            this.model_validations = response.data;
+                            //this.display_validation_graph(response.data);
+                            this.loading = false;
+                        },
+                        (error) => {
+                            //console.log(error);
+                            this.error_from_alpine_js = "No validation data uploaded! Refresh the page and go to upload module under validation data.";
+                        });
+                    }
+                    else{
+                        this.error_message = 'Please select a product!';
+                        setTimeout(() => {
+                            this.error_message = '';
+                        }, 3000);
+                    }
+                },
+                display_validation_graph(validation_data, canvas_id, index){
+                    if(validation_graph[index]!=null){
+                        validation_graph[index].destroy();
+                    }
+
+                    const forecast_date_labels = Object.values(validation_data['forecast']['dates']);
+                    const actual_date_labels = Object.values(validation_data['actual']['dates']);
+                    var actual_quantity = Object.values(validation_data['actual']['quantity']);
+                    const forecast_quantity = Object.values(validation_data['forecast']['quantity']);
+                    
+                    const date_object_actual = new Date(actual_date_labels[0]);
+                    const date_object_forecast = new Date(forecast_date_labels[0]);
+
+                    const diffTime = Math.abs(date_object_forecast - date_object_actual);
+                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+                    const diffWeeks = Math.floor(diffDays / 7);
+
+                    if(diffWeeks > 0){
+                        for(var i=0; i<diffWeeks; i++){
+                            actual_quantity.unshift(null);
+                        }
+                    }
+                    
+                    // Data
+                    const p_data = {
+                        labels: this.date_formatter(forecast_date_labels),
+                        datasets: [{
+                            label: 'Actual',
+                            backgroundColor: this.color_generator(0.2),
+                            borderColor: this.color_generator(1),
+                            pointBackgroundColor: this.color_generator(1),
+                            data: actual_quantity,
+                            borderWidth: 1.5,
+                            tension: 0.3,
+                            fill: true,
+                        },
+                        {
+                            label: 'Forecasted',
+                            backgroundColor: this.color_generator(0.2),
+                            borderColor: this.color_generator(1),
+                            pointBackgroundColor: this.color_generator(1),
+                            data: forecast_quantity,
+                            borderWidth: 1.5,
+                            tension: 0.3,
+                            fill: true,
+                        }]
+                    };
+
+                    // COnfig
+                    const config = {
+                        type: 'line',
+                        data: p_data,
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: true,
+                                tooltip: true,
+                                title: {
+                                    display: false,
+                                    text: 'Recurrent Neural Network',
+                                    font: {
+                                        size: 16
+                                    }
+                                },
+                            },
+                            hover: {
+                                mode: 'index',
+                                intersect: true
+                            },
+                            scales: {
+                                x: {
+                                  grid: {
+                                    display: true
+                                  }
+                                },
+                                y: {
+                                  grid: {
+                                    display: false
+                                  }
+                                }
+                            }
+                        }
+                    };
+
+                    // Chart
+                    var chrt1 = document.getElementById(canvas_id).getContext('2d');
+                    // Render
+                    validation_graph[index] = new Chart(
+                        chrt1,
+                        config
+                    );
+
+
+                },
+                floor_quantity(quantity_list){
+                    var quantity_list_round = [];
+                    for (var i = 0; i < quantity_list.length; i++){
+                        quantity_list_round[i] = Math.floor(quantity_list[i]);
+                    }
+                    return quantity_list_round;
+                },
+                clear_data(){
+                    product_graph = [];
+                    //console.log('Test');
+                }
+
+            }));
+        });
+    </script>
+{% endblock %}

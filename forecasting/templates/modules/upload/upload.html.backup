@@ -1,0 +1,339 @@
+
+{% extends 'layout/navigation.html' %}
+{% block title %} Upload | Demand Forecasting {% endblock %}
+{% block breadcrumb %}
+    Upload
+{% endblock %}
+
+{% block module %}
+    <div class="w-full -mb-20 pb-5" x-data="upload">
+        <label
+            class="flex items-center justify-center w-full h-32 px-4 transition bg-white border-2 border-gray-200 border-dashed rounded-md appearance-none cursor-pointer hover:border-gray-400 focus:outline-none"
+            :class="[dragging ? 'border-blue-400' : 'border-gray-200']"
+            x-on:dragover.prevent="dragging = true"
+            x-on:dragleave.prevent="dragging = false"
+            x-on:drop.prevent="onDropFile">
+            <span class="flex flex-col items-center ">
+                <img src="{{ url_for('static', filename="/img/upload.png") }}" class="w-16 h-16">
+                <!-- <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-gray-600" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                </svg> -->
+                <span class="font-medium text-gray-600">
+                    Drop files to Attach, or
+                    <span class="text-blue-400 font-bold">browse</span>
+                </span>
+            </span>
+            <form method="POST">
+                {{ form.file(class="hidden") }}
+                <!-- {{ form.submit(class="hidden") }} -->
+            </form>
+        </label>
+
+        <template x-for="(item, index) in csvFile" :key="index">
+            <div class="bg-gray-100 mx-5 mt-5 p-3 flex rounded-md items-center">
+                <div class="">
+                    <img src="{{ url_for('static', filename="/img/csv.png") }}" alt="" class="w-10 h-10">
+                </div>
+                <div class="flex flex-col w-full">
+                    <div class="flex flex-row justify-between w-full items-center">
+                        <span class="text-sm text-gray-700 font-semibold" x-text="item.file.name"></span>
+                        <span class="text-2xl cursor-pointer text-gray-700 font-semibold">&times;</span>
+                    </div>
+                    <div class="flex flex-row justify-between w-full bg-gray-200 rounded-full">
+                        <div class="bg-green-400 h-2 rounded-full" :style="`width: ${item.progress}%`">
+                        </div>
+                    </div>
+                    <div class="flex flex-row justify-between w-full pt-1">
+                        <span class="text-sm text-gray-700 font-semibold"><span x-text="item.file_size"></span> MB</span>
+                        <span class="text-sm text-gray-700 font-semibold"><span x-text="item.progress"></span>%</span>
+                    </div>
+                </div>
+            </div>
+        </template>
+
+        <div class="flex items-center justify-center w-full mt-5 h-4/6 px-4 transition bg-white border-2 border-gray-200 rounded-md appearance-none" style="display: none;" x-show="!showData">
+            <div class="flex flex-col items-center">
+                <div>
+                    <img src="{{ url_for('static', filename="/img/nodata.png") }}" alt="" class="w-32 h-32">
+                </div>
+                <div>
+                    <p class="text-gray-400">No data to show</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="w-full mt-5 h-screen pb-5 overflow-x-auto overflow-y-auto transition bg-white border-2 border-gray-200 rounded-md appearance-none" style="display: none;" x-show="showData">
+            <div class="">
+                <table class="w-full  text-sm text-left text-gray-500 dark:text-gray-400">
+                    <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                        <tr>
+                            <th scope="col" class="py-3 px-6 bg-yellow-100 rounded-l-lg whitespace-nowrap">
+                                Transaction Date
+                            </th>
+                            <th scope="col" class="py-3 px-6 bg-yellow-100 whitespace-nowrap">
+                                Item Code
+                            </th>
+                            <th scope="col" class="py-3 px-6 bg-yellow-100 whitespace-nowrap">
+                                Item Description
+                            </th>
+                            <th scope="col" class="py-3 px-6 bg-yellow-100 whitespace-nowrap">
+                                Quantity Sold
+                            </th>
+                            <th scope="col" class="py-3 px-6 bg-yellow-100 whitespace-nowrap">
+                                Quantity Return
+                            </th>
+                            <th scope="col" class="py-3 px-6 bg-yellow-100 whitespace-nowrap">
+                                Unit Price
+                            </th>
+                            <th scope="col" class="py-3 px-6 bg-yellow-100 whitespace-nowrap">
+                                Total Unit Price
+                            </th>
+                            <th scope="col" class="py-3 px-6 bg-yellow-100 whitespace-nowrap">
+                                Item Cost
+                            </th>
+                            <th scope="col" class="py-3 px-6 bg-yellow-100 whitespace-nowrap">
+                                Total Item Cost
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="">
+                        <template x-for="row in csv_data">
+                            <tr class="dark:bg-gray-800 hover:bg-gray-400">
+                                <td class="py-1 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                    <div class="bg-white py-4 px-6 -ml-1">
+                                        <span x-text="row.trandate"></span>
+                                    </div>
+                                </td>
+                                <td class="py-1 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                    <div class="bg-white py-4 px-6 -ml-1">
+                                        <span x-text="row.itemcode"></span>
+                                    </div>
+                                </td>
+                                <td class="py-1 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                    <div class="bg-white py-4 px-6 -ml-1">
+                                        <span x-text="row.description"></span>
+                                    </div>
+                                </td>
+                                <td class="py-1 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                    <div class="bg-white py-4 px-6 -ml-1">
+                                        <span x-text="row.qtysold"></span>
+                                    </div>
+                                </td>
+                                <td class="py-1 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                    <div class="bg-white py-4 px-6 -ml-1">
+                                        <span x-text="row.qtyreturn"></span>
+                                    </div>
+                                </td>
+                                <td class="py-1 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                    <div class="bg-white py-4 px-6 -ml-1">
+                                        <span x-text="row.unitprice"></span>
+                                    </div>
+                                </td>
+                                <td class="py-1 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                    <div class="bg-white py-4 px-6 -ml-1">
+                                        <span x-text="row.lineextprice"></span>
+                                    </div>
+                                </td>
+                                <td class="py-1 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                    <div class="bg-white py-4 px-6 -ml-1">
+                                        <span x-text="row.itemcost"></span>
+                                    </div>
+                                </td>
+                                <td class="py-1 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                    <div class="bg-white py-4 px-6 -ml-1">
+                                        <span x-text="row.lineextcost"></span>
+                                    </div>
+                                </td>
+                            </tr>
+                        </template>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- START MESSAGE -->
+        <div class="fixed z-50 bottom-0 right-0 mb-5 mr-3 items-center justify-center w-80" style="display: none" x-show="error" >
+            <div class="flex items-center justify-between bg-white rounded border-l-4 border-red-400 overflow-hidden p-2 space-x-3 h-20 shadow-md"
+                    x-transition:enter="transition ease-out duration-1000 delay-400"
+                    x-transition:enter-start="opacity-0 delay-1000"
+                    x-transition:enter-end="opacity-100"
+                    x-transition:leave="transition ease-in duration-700"
+                    x-transition:leave-start="opacity-100"
+                    x-transition:leave-end="opacity-0">
+                <div class="flex flex-row items-center">
+                    <div class="flex flex-row">
+                        <span class="border-2 border-red-400 bg-white bg-opacity-50 rounded-full p-1 mr-3">
+                            <svg class="h-6 w-auto text-red-400" fill="currentColor" viewBox="0 0 20 20" >
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" ></path>
+                            </svg>
+                        </span>
+                    </div>
+                    <div class="flex flex-col items-start">
+                        <p class="leading-tight text-xs md:text-sm">
+                            <strong class="text-red-400 text-lg">Error</strong>
+                        </p>
+                        <p class="leading-tight text-xs md:text-sm">
+                            <span class="text-gray-400">Invalid file type</span>
+                        </p>
+                    </div>
+                </div>
+
+                <div>
+                    <button type="button" class="text-gray-700 rounded overflow-hidden p-1 lg:p-2 focus:outline-none" @click="error = false">
+                        <svg class="h-4 w-auto" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="fixed z-50 bottom-0 right-0 mb-5 mr-3 items-center justify-center w-80" style="display: none" x-show="success">
+            <div class="flex items-center justify-between bg-white rounded border-l-4 border-green-400 overflow-hidden p-2 space-x-3 h-20 shadow-md"
+                    x-transition:enter="transition ease-out duration-1000 delay-400"
+                    x-transition:enter-start="opacity-0 delay-1000"
+                    x-transition:enter-end="opacity-100"
+                    x-transition:leave="transition ease-in duration-700"
+                    x-transition:leave-start="opacity-100"
+                    x-transition:leave-end="opacity-0">
+                <div class="flex flex-row items-center">
+                    <div class="flex flex-row">
+                        <span class="border-2 border-green-400 bg-white bg-opacity-50 rounded-full p-1 mr-3">
+                            <svg class="h-6 w-auto text-green-400" fill="currentColor" viewBox="0 0 20 20" >
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" ></path>
+                            </svg>
+                        </span>
+                    </div>
+                    <div class="flex flex-col items-start">
+                        <p class="leading-tight text-xs md:text-sm">
+                            <strong class="text-green-400 text-lg">Success</strong>
+                        </p>
+                        <p class="leading-tight text-xs md:text-sm">
+                            <span class="text-gray-400">Upload successfull</span>
+                        </p>
+                    </div>
+                </div>
+
+                <div>
+                    <button type="button" class="text-gray-700 rounded overflow-hidden p-1 lg:p-2 focus:outline-none" @click="success = false">
+                        <svg class="h-4 w-auto" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- END OF MESSAGE -->
+    </div>
+    <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('upload', () => ({
+                dragging: false,
+                csvFile: [],
+                error: false,
+                success: false,
+                showNoData: false,
+                showData: {{ 'true' if csv_data and csv_data != '{}' else 'false' }},
+                current_csv: [],
+                csv_data: {{ csv_data|safe if csv_data else [] }},
+                loading: false,
+
+                onDropFile($event){
+                    this.csvFile = [];
+                    this.dragging = false;
+                    let files = [...$event.dataTransfer.items]
+                        .filter(item => item.kind === 'file')
+                        .map(item => item.getAsFile());
+
+                    this.uploadFiles(files)
+                },
+
+                onSelectedFile($event){
+                    this.csvFile = [];
+                    let files = [...$event.target.files];
+                    this.uploadFiles(files);
+                },
+
+                uploadFiles(files){
+                    //allowed file type | CSV
+                    const allowed_type = 'csv';
+                    let upload_type = '';
+
+                    for (const key in files) {
+                        if (Object.hasOwnProperty.call(files, key)) {
+                            const element = files[key];
+                            upload_type = element.name.split(".").pop();
+
+                            // for file size
+                            const bytesToMegaBytes = bytes => (bytes / (1024 ** 2)).toFixed(2);
+                            this.csvFile.unshift({
+                                file: element,
+                                progress: 0,
+                                file_size: bytesToMegaBytes(element.size),
+                            });
+                            break;
+                        }
+                    }
+
+                    for (const key in files) {
+                        if (Object.hasOwnProperty.call(this.csvFile, key)) {
+                            if (allowed_type == upload_type.toLowerCase()) {
+                                this.csv_data = [];
+                                let form = new FormData;
+                                form.append('file', this.csvFile[key].file);
+                                axios.post('/upload', form, {
+                                    onUploadProgress: (event) => {
+                                        this.csvFile[key].progress = Math.round(event.loaded * 100 / event.total);
+                                    }
+                                })
+                                .then((response) => {
+                                    this.current_csv = [];
+                                    this.current_csv = response.data;
+                                    var index = 0;
+                                    this.csv_data = [];
+                                    for (const key in this.current_csv) {
+                                        if (Object.hasOwnProperty.call(this.current_csv, key)) {
+                                            const element = this.current_csv[key];
+                                            this.csv_data[index] = element;
+                                            index++;
+                                        }
+                                    }
+                                    this.success = true;
+                                    this.error = false;
+                                })
+                                .then(() => {
+                                    setTimeout(() => {
+                                        this.showNoData = false;
+                                        this.showData = true;
+                                    }, 200);
+                                    setTimeout(() => {
+                                        this.success = false;
+                                    }, 3000);
+                                });
+                            }
+                            else {
+                                this.success = false;
+                                this.error = true;
+                            }
+                        }
+                    }
+                    //this.read_csv();
+                    //console.log(files);
+                },
+
+                /*read_csv(){
+                    var config = "4444";
+                    axios.get('/read_csv')
+                    .then((response) => {
+                        this.showNoData = false;
+                        this.showData = true;
+                        console.log(response.data);
+                    });
+                }*/
+            }))
+        })
+    </script>
+{% endblock %}
+
+

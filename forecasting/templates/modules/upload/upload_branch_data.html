@@ -1,0 +1,220 @@
+<div class="w-full -mb-20 pb-5" x-show="upload_tab == '0'" style="display: none;">
+    <div class="flex flex-col lg:flex-row space-x-0 lg:space-x-2 space-y-2 lg:space-y-0 mb-3">
+        <select name="branch" id="branch" x-ref="branch" x-on:change="select_branch($refs.branch.value)" class="w-full sm:w-1/2 md:w-1/4 lg:w-1/4 bg-yellow-50 text-sm rounded-lg shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+            <option value="" selected hidden> Select Branch </option>
+            {% if branches %}
+                {% for branch in branches %}
+                    <option class="text-md" value="{{ branch.branch_id }}"> {{branch.branch_description}} </option>
+                {% endfor %}
+            {% endif %}
+        </select>
+    </div>
+    <label x-show="show_upload_field"
+        class="flex items-center justify-center w-full h-32 px-4 transition bg-white border-2 border-gray-200 border-dashed rounded-md appearance-none cursor-pointer hover:border-gray-400 focus:outline-none"
+        :class="[dragging ? 'border-blue-400' : 'border-gray-200']"
+        x-on:dragover.prevent="dragging = true"
+        x-on:dragleave.prevent="dragging = false"
+        x-on:drop.prevent="onDropFile">
+        <span class="flex flex-col items-center ">
+            <img src="{{ url_for('static', filename="/img/upload.png") }}" class="w-16 h-16">
+            
+            <span class="font-medium text-gray-600">
+                Drop files to Attach, or
+                <span class="text-blue-400 font-bold">browse</span>
+            </span>
+        </span>
+        <form method="POST">
+            {{ form.file(class="hidden") }}
+            <!-- {{ form.submit(class="hidden") }} -->
+        </form>
+    </label>
+
+    <template x-for="(item, index) in csvFile" :key="index">
+        <div class="bg-gray-100 mx-5 mt-5 p-3 flex rounded-md items-center">
+            <div class="">
+                <img src="{{ url_for('static', filename="/img/csv.png") }}" alt="" class="w-10 h-10">
+            </div>
+            <div class="flex flex-col w-full">
+                <div class="flex flex-row justify-between w-full items-center">
+                    <span class="text-sm text-gray-700 font-semibold" x-text="item.file.name"></span>
+                    <span class="invisible text-2xl cursor-pointer text-gray-700 font-semibold">&times;</span>
+                </div>
+                <div class="flex flex-row justify-between w-full bg-gray-200 rounded-full">
+                    <div class="bg-green-400 h-2 rounded-full" :style="`width: ${item.progress}%`">
+                    </div>
+                </div>
+                <div class="flex flex-row justify-between w-full pt-1">
+                    <span class="text-sm text-gray-700 font-semibold"><span x-text="item.file_size"></span> MB</span>
+                    <span class="text-sm text-gray-700 font-semibold"><span x-text="item.progress"></span>%</span>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <div class="flex items-center justify-center w-full mt-5 h-4/6 px-4 transition bg-white border-2 border-gray-200 rounded-md appearance-none" style="display: none;" x-show="!showData">
+        <div class="flex flex-col items-center">
+            <div>
+                <img src="{{ url_for('static', filename="/img/nodata.png") }}" alt="" class="w-32 h-32">
+            </div>
+            <div>
+                <p class="text-gray-400">No data to show</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="w-full mt-5 h-screen pb-5 overflow-x-auto overflow-y-auto transition bg-white border-2 border-gray-200 rounded-md appearance-none" style="display: none;" x-show="showData">
+        <div class="">
+            <table class="w-full  text-sm text-left text-gray-500 dark:text-gray-400">
+                <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                    <tr>
+                        <th scope="col" class="py-3 px-6 bg-yellow-100 rounded-l-lg whitespace-nowrap">
+                            Transaction Date
+                        </th>
+                        <th scope="col" class="py-3 px-6 bg-yellow-100 whitespace-nowrap">
+                            Item Code
+                        </th>
+                        <th scope="col" class="py-3 px-6 bg-yellow-100 whitespace-nowrap">
+                            Item Description
+                        </th>
+                        <th scope="col" class="py-3 px-6 bg-yellow-100 whitespace-nowrap">
+                            Quantity Sold
+                        </th>
+                        <th scope="col" class="py-3 px-6 bg-yellow-100 whitespace-nowrap">
+                            Quantity Return
+                        </th>
+                        <th scope="col" class="py-3 px-6 bg-yellow-100 whitespace-nowrap">
+                            Unit Price
+                        </th>
+                        <th scope="col" class="py-3 px-6 bg-yellow-100 whitespace-nowrap">
+                            Total Unit Price
+                        </th>
+                        <th scope="col" class="py-3 px-6 bg-yellow-100 whitespace-nowrap">
+                            Item Cost
+                        </th>
+                        <th scope="col" class="py-3 px-6 bg-yellow-100 whitespace-nowrap">
+                            Total Item Cost
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="">
+                    {% if csv_data  %}
+                        {% for data in csv_data.items %}
+                            <tr class="dark:bg-gray-800 hover:bg-gray-400">
+                                <td class="py-1 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                    <div class="bg-white py-4 px-6 -ml-1 text-center">
+                                        <span>{{ data.transaction_date }}</span>
+                                    </div>
+                                </td>
+                                <td class="py-1 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                    <div class="bg-white py-4 px-6 -ml-1">
+                                        <span>{{ data.item_code }}</span>
+                                    </div>
+                                </td>
+                                <td class="py-1 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                    <div class="bg-white py-4 px-6 -ml-1">
+                                        <span>{{ data.item_description }}</span>
+                                    </div>
+                                </td>
+                                <td class="py-1 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                    <div class="bg-white py-4 px-6 -ml-1 text-center">
+                                        <span>{{ data.quantity_sold }}</span>
+                                    </div>
+                                </td>
+                                <td class="py-1 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                    <div class="bg-white py-4 px-6 -ml-1 text-center">
+                                        <span>{{ data.quantity_return }}</span>
+                                    </div>
+                                </td>
+                                <td class="py-1 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                    <div class="bg-white py-4 px-6 -ml-1 text-center">
+                                        <span>{{ data.item_price }}</span>
+                                    </div>
+                                </td>
+                                <td class="py-1 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                    <div class="bg-white py-4 px-6 -ml-1 text-center">
+                                        <span>{{ data.total_item_price }}</span>
+                                    </div>
+                                </td>
+                                <td class="py-1 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                    <div class="bg-white py-4 px-6 -ml-1 text-center">
+                                        <span>{{ data.item_cost }}</span>
+                                    </div>
+                                </td>
+                                <td class="py-1 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                    <div class="bg-white py-4 px-6 -ml-1 text-center">
+                                        <span>{{ data.total_item_cost }}</span>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="mt-5 pb-5 flex flex-row space-x-1 justify-end">
+        {% if csv_data %}
+            {% for page_num in csv_data.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+                {% if page_num  %}
+                    {% if csv_data.page == page_num  %}
+                        <a class="inline-flex items-center w-7 h-7 justify-center bg-green-400 border border-transparent rounded-md text-sm text-white uppercase tracking-widest hover:bg-green-400 active:bg-gray-900 focus:outline-none focus:border-gray-900 focus:ring ring-gray-300 disabled:opacity-25 transition ease-in-out duration-150" href="{{ url_for('views.upload', page=page_num) }}">{{ page_num }}</a>
+                    {% else %}
+                        <a class="inline-flex items-center w-7 h-7 justify-center bg-gray-400 border border-transparent rounded-md text-sm text-white uppercase tracking-widest hover:bg-green-300 active:bg-gray-900 focus:outline-none focus:border-gray-900 focus:ring ring-gray-300 disabled:opacity-25 transition ease-in-out duration-150" href="{{ url_for('views.upload', page=page_num) }}">{{ page_num }}</a>
+                    {% endif %}
+                {% else %}
+                    ...
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    </div>
+
+    <!-- START MESSAGE -->
+    <div class="fixed z-50 bottom-0 right-0 mb-5 mr-3 items-center justify-center w-80" style="display: none" x-show="error" >
+        <div class="flex items-center justify-between bg-white rounded border-l-4 border-red-400 overflow-hidden p-2 space-x-3 h-20 shadow-md"
+                x-transition:enter="transition ease-out duration-1000 delay-400"
+                x-transition:enter-start="opacity-0 delay-1000"
+                x-transition:enter-end="opacity-100"
+                x-transition:leave="transition ease-in duration-700"
+                x-transition:leave-start="opacity-100"
+                x-transition:leave-end="opacity-0">
+            <div class="flex flex-row items-center">
+                <div class="flex flex-row">
+                    <span class="border-2 border-red-400 bg-white bg-opacity-50 rounded-full p-1 mr-3">
+                        <svg class="h-6 w-auto text-red-400" fill="currentColor" viewBox="0 0 20 20" >
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" ></path>
+                        </svg>
+                    </span>
+                </div>
+                <div class="flex flex-col items-start">
+                    <p class="leading-tight text-xs md:text-sm">
+                        <strong class="text-red-400 text-lg">Error</strong>
+                    </p>
+                    <p class="leading-tight text-xs md:text-sm">
+                        <span class="text-gray-400" x-text="error_msg"></span>
+                    </p>
+                </div>
+            </div>
+
+            <div>
+                <button type="button" class="text-gray-700 rounded overflow-hidden p-1 lg:p-2 focus:outline-none" @click="error = false">
+                    <svg class="h-4 w-auto" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="flex items-center h-full justify-center bg-gray-200 bg-opacity-70 mx-auto overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 w-full  md:inset-0 px-2 pt-2" style="display: none" x-show="success_branch_data">
+        <div class="flex flex-col relative w-full max-w-lg rounded-lg">
+            <div class="flex flex-col  items-center">
+                <p class="leading-tight text-xs md:text-sm text-center">
+                    <span class="text-green-400 font-bold text-lg">Upload successfull</span>
+                    <br/>
+                    <span class="text-gray-400 font-bold text-lg">Processing Data, Please wait...</span>
+                </p>
+                <img src="{{ url_for('static', filename="/img/spinner.png") }}" alt="" class="animate-spin w-7 h-7 mx-auto">
+            </div>
+            
+        </div>
+    </div>
+</div>

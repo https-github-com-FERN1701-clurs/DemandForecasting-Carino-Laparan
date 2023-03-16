@@ -1,0 +1,398 @@
+{% extends 'layout/base.html' %}
+{% block title %} Demand Forecasting {% endblock %}
+{% block content%}
+    <div x-data="main_" x-init="$refs.c_confirm_password.type = $refs.c_password.type = 'password',
+        setTimeout(() => {
+            p_flash_message = false;
+        }, 3000)">
+        <div class="flex-1 top-0 right-0 w-full z-10 lg:ml-20 overflow-hidden" >
+            {% include 'layout/change_password.html' %}
+            {% include 'layout/profile.html' %}
+            {% include 'modules/forecasting/change_model.html' %}
+            <header class="flex fixed h-12 w-full justify-between border-b-2 border-gray-800 bg-white items-center px-3 right-0 z-10">
+                <div class="flex items-center w-full">
+                    <button class="p-2 focus:outline-none focus:bg-gray-700 hover:bg-gray-700 hover:text-white rounded-md lg:hidden" @click="open = true" @click.away="open = false">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
+
+                    <div class="lg:ml-20 text-sm">
+                        {% block breadcrumb %}
+                        {% endblock %}
+                    </div>
+                </div>
+
+                <nav class="flex justify-end h-12 items-center px-4 w-full">
+                    <!-- Settings Icon -->
+                    <!-- <span class="mr-3 hover:bg-gray-200 p-1 rounded-md">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 cursor-pointer hover:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                    </span> -->
+                    <!-- Settings Icon -->
+
+                    <div class="flex flex-col justify-end text-right">
+                        <p class="text-sm font-bold">{{ auth_user.first_name }}</p>
+                        <p class="text-xs">{{ 'Admin' if auth_user.user_type == -1 or auth_user.user_type == 0 else 'Personnel' }}</p>
+                    </div>
+
+                    <div @click.away="open = false" class="flex relative pl-2" x-data="{ open: false }" >
+                        <img @click="open = !open" src="{{ url_for('static', filename='/'.join(['uploads/profile_pictures', auth_user.avatar])) }}" alt="" class="cursor-pointer w-10 h-10 rounded-full border-2 border-gray-300">
+                        <button @click="open = !open" class="flex flex-row items-center w-full text-sm font-semibold text-left">
+                            <svg fill="currentColor" viewBox="0 0 20 20" :class="{'rotate-180': open, 'rotate-0': !open}" class="inline w-4 h-4 mt-1 ml-1 transition-transform duration-200 transform md:-mt-1"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                        </button>
+
+                        <div x-show="open" style="display: none;" x-transition:enter="transition ease-out duration-100" x-transition:enter-start="transform opacity-0 scale-95" x-transition:enter-end="transform opacity-100 scale-100" x-transition:leave="transition ease-in duration-75" x-transition:leave-start="transform opacity-100 scale-100" x-transition:leave-end="transform opacity-0 scale-95" class="absolute right-0.5 lg:right-0 mt-2 origin-top-right rounded-md shadow-lg md:w-48 mt-12 ">
+                            <div class="px-2 py-2 bg-white rounded-md shadow dark-mode:bg-gray-800 w-full">
+                                <button type="button" class="flex flex-row space-x-2 block text text-left w-full px-4 py-2 mt-2 text-sm font-semibold bg-transparent rounded-lg dark-mode:bg-transparent dark-mode:hover:bg-gray-600 dark-mode:focus:bg-gray-600 dark-mode:focus:text-white dark-mode:hover:text-white dark-mode:text-gray-200 md:mt-0 hover:text-gray-900 focus:text-gray-900 hover:bg-gray-200 focus:bg-gray-200 focus:outline-none focus:shadow-outline" x-on:click="get_profile_details">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    <span>Profile</span>
+                                </button>
+                                <button type="button" class="flex flex-row space-x-2 block whitespace-nowrap text-left w-full px-4 py-2 mt-2 text-sm font-semibold bg-transparent rounded-lg dark-mode:bg-transparent dark-mode:hover:bg-gray-600 dark-mode:focus:bg-gray-600 dark-mode:focus:text-white dark-mode:hover:text-white dark-mode:text-gray-200 md:mt-0 hover:text-gray-900 focus:text-gray-900 hover:bg-gray-200 focus:bg-gray-200 focus:outline-none focus:shadow-outline" x-on:click="change_password = true">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" />
+                                    </svg>
+                                    <span>Change Password</span>
+                                </button>
+                                <a class="flex flex-row space-x-2 block text-left w-full px-4 py-2 mt-2 text-sm font-semibold bg-transparent rounded-lg dark-mode:bg-transparent dark-mode:hover:bg-gray-600 dark-mode:focus:bg-gray-600 dark-mode:focus:text-white dark-mode:hover:text-white dark-mode:text-gray-200 md:mt-0 hover:text-gray-900 focus:text-gray-900 hover:bg-gray-200 focus:bg-gray-200 focus:outline-none focus:shadow-outline" href="/logout">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                                    </svg>
+                                    <span>Logout</span>
+                                </a>
+                                <!--<form method="POST" action="">
+
+                                    <button class="block text-left w-full px-4 py-2 mt-2 text-sm font-semibold bg-transparent rounded-lg dark-mode:bg-transparent dark-mode:hover:bg-gray-600 dark-mode:focus:bg-gray-600 dark-mode:focus:text-white dark-mode:hover:text-white dark-mode:text-gray-200 md:mt-0 hover:text-gray-900 focus:text-gray-900 hover:bg-gray-200 focus:bg-gray-200 focus:outline-none focus:shadow-outline" onclick="this.disabled=true;this.form.submit();">
+                                        Logout
+                                    </button>
+                                </form> -->
+                            </div>
+                        </div>
+                    </div>
+                </nav>
+            </header>
+            <div class="fixed z-50 bottom-0 right-0 mb-5 mr-3 items-center justify-center w-80" style="display: none;" x-show="show_success">
+                <div class="flex items-center justify-between bg-white rounded border-l-4 border-yellow-200 overflow-hidden p-2 space-x-3 h-20 shadow-md"
+                        x-transition:enter="transition ease-out duration-1000 delay-400"
+                        x-transition:enter-start="opacity-0 delay-1000"
+                        x-transition:enter-end="opacity-100"
+                        x-transition:leave="transition ease-in duration-700"
+                        x-transition:leave-start="opacity-100"
+                        x-transition:leave-end="opacity-0">
+                    <div class="flex flex-row items-center">
+                        <div class="flex flex-row">
+                            <span class="border-2 border-yellow-200 bg-white bg-opacity-50 rounded-full p-1 mr-3">
+                                <svg class="h-6 w-auto text-yellow-300" fill="currentColor" viewBox="0 0 20 20" >
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" ></path>
+                                </svg>
+                            </span>
+                        </div>
+                        <div class="flex flex-col items-start">
+                            <p class="leading-tight text-xs md:text-sm">
+                                <strong class="text-yellow-300 text-lg">Success</strong>
+                            </p>
+                            <p class="leading-tight text-xs md:text-sm">
+                                <span class="text-gray-400" x-text="p_success_message"></span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <div>
+                        <button type="button" class="text-gray-700 rounded overflow-hidden p-1 lg:p-2 focus:outline-none" @click="show_success = false">
+                            <svg class="h-4 w-auto" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        {% if category == 'p_success' %}
+                        <div class="fixed z-50 bottom-0 right-0 mb-5 mr-3 items-center justify-center w-80" style="display: none;" x-show="p_flash_message">
+                            <div class="flex items-center justify-between bg-white rounded border-l-4 border-yellow-200 overflow-hidden p-2 space-x-3 h-20 shadow-md"
+                                    x-transition:enter="transition ease-out duration-1000 delay-400"
+                                    x-transition:enter-start="opacity-0 delay-1000"
+                                    x-transition:enter-end="opacity-100"
+                                    x-transition:leave="transition ease-in duration-700"
+                                    x-transition:leave-start="opacity-100"
+                                    x-transition:leave-end="opacity-0">
+                                <div class="flex flex-row items-center">
+                                    <div class="flex flex-row">
+                                        <span class="border-2 border-yellow-200 bg-white bg-opacity-50 rounded-full p-1 mr-3">
+                                            <svg class="h-6 w-auto text-yellow-300" fill="currentColor" viewBox="0 0 20 20" >
+                                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" ></path>
+                                            </svg>
+                                        </span>
+                                    </div>
+                                    <div class="flex flex-col items-start">
+                                        <p class="leading-tight text-xs md:text-sm">
+                                            <strong class="text-yellow-300 text-lg">Success</strong>
+                                        </p>
+                                        <p class="leading-tight text-xs md:text-sm">
+                                            <span class="text-gray-400">{{ message }}</span>
+                                        </p>
+                                    </div>
+                                </div>
+                
+                                <div>
+                                    <button type="button" class="text-gray-700 rounded overflow-hidden p-1 lg:p-2 focus:outline-none" @click="p_flash_message = false">
+                                        <svg class="h-4 w-auto" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
+    </div>
+    
+    <nav  class="fixed inset-0 duration-300 transform lg:transform-none lg:opacity-100 z-20 w-20 bg-gray-800 text-white h-max p-3 overflow-x-hidden overflow-y-auto"
+        :class="{'translate-x-0 ease-in opacity-100': open == true, '-translate-x-full ease-out opacity-0' : open == false }">
+        <div class="flex justify-between">
+            <a class="flex items-center" href="">
+                <img src="{{ url_for('static', filename="/img/logo2.png") }}" alt="" class=" cursor-pointer w-14 h-14">
+                <!-- <span class="font-bold text-2x1 sm:text-3x1 px-1 text-yellow-300">Code</span><span class="font-bold text-green-300 text-2x1 sm:text-3x1">Ninja</span> -->
+            </a>
+        </div>
+        <div class="flex flex-col justify-between bg-gray-800">
+            <ul class="mt-5">
+                <!--<li :class="[ $refs.m_dashboard.href.substring(21) == active ? 'bg-blue-300 bg-opacity-30 text-white rounded-md' : '' ]">
+                    <a x-ref="m_dashboard" href="/dashboard" class=" transition duration-500 ease-in-out flex block py-2 hover:bg-gray-700 hover:bg-opacity-50 hover:text-green-100 rounded-md items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                        </svg>
+                    </a>
+                </li>-->
+                {% if permissions.forecasting %}
+                    <li title="Forecasting" :class="[ $refs.m_forecasting.href.substring(21) == active ? 'bg-blue-300 bg-opacity-30 text-white rounded-md' : '' ]">
+                        <a x-ref="m_forecasting" href="/forecasting" class=" active:bg-green-700 transition duration-500 ease-in-out flex block py-2 hover:bg-gray-700 hover:bg-opacity-50 hover:text-green-100 rounded-md items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                            </svg>
+                        </a>
+                    </li>
+                {% endif %}
+                {% if permissions.user_c or permissions.user_r or permissions.user_u or permissions.user_d or permissions.user_p %}
+                    <li title="Users" :class="[ $refs.m_users.href.substring(21) == active ? 'bg-blue-300 bg-opacity-30 text-white rounded-md' : '' ]">
+                        <a x-ref="m_users" href="/users" class=" active:bg-green-700 transition duration-500 ease-in-out flex block py-2 hover:bg-gray-700 hover:bg-opacity-50 hover:text-green-100 rounded-md items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                            </svg>
+                        </a>
+                    </li>
+                {% endif %}
+                {% if permissions.uploading %}
+                    <li title="Upload" :class="[ $refs.m_upload.href.substring(21) == active ? 'bg-blue-300 bg-opacity-30 text-white rounded-md' : '' ]">
+                        <a x-ref="m_upload" href="/upload" class=" active:bg-green-700 transition duration-500 ease-in-out flex block py-2 hover:bg-gray-700 hover:bg-opacity-50 hover:text-green-100 rounded-md items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                            </svg>
+                        </a>
+                    </li>
+                {% endif %}
+                {% if permissions.setting_c or permissions.setting_u or permissions.setting_d %}
+                    <li title="Settings" :class="[ $refs.m_settings.href.substring(21) == active ? 'bg-blue-300 bg-opacity-30 text-white rounded-md' : '' ]">
+                        <a x-ref="m_settings" href="/settings" class="active:bg-green-700 transition duration-500 ease-in-out flex block py-2 hover:bg-gray-700 hover:bg-opacity-50 hover:text-green-100 rounded-md items-center">
+                            <!-- <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                            </svg> -->
+                            <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+            
+            <div :class="[ $refs.m_forecasting.href.substring(21) == active ? 'block' : 'hidden' ]" class="">
+                <a title="Change Model" type="button" class="active:bg-green-700 transition duration-500 ease-in-out flex block py-2 hover:bg-gray-700 hover:bg-opacity-50 hover:text-green-100 rounded-md items-center"
+                    x-on:click="show_change_model = !show_change_model">
+                    <!-- <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                    </svg> -->
+                    <!-- <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg> -->
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="mx-auto w-6 h-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 3v1.5M4.5 8.25H3m18 0h-1.5M4.5 12H3m18 0h-1.5m-15 3.75H3m18 0h-1.5M8.25 19.5V21M12 3v1.5m0 15V21m3.75-18v1.5m0 15V21m-9-1.5h10.5a2.25 2.25 0 002.25-2.25V6.75a2.25 2.25 0 00-2.25-2.25H6.75A2.25 2.25 0 004.5 6.75v10.5a2.25 2.25 0 002.25 2.25zm.75-12h9v9h-9v-9z" />
+                    </svg>
+                </a>
+            </div>
+        </div>
+        
+        <!-- <div>
+            <button class="p-2 focus:outline-none focus:bg-gray-700 hover:bg-gray-700 rounded-md lg:hidden" @click="open = false">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                </svg>
+            </button>
+        </div> -->
+    </nav>
+    <div class="max-w-full lg:ml-20">
+        <!-- Page Content -->
+        <div class="pt-14 p-3 bg-gray-50">
+            {% block module %}
+            {% endblock  %}
+        </div>
+    </div>
+    <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('main_', () => ({
+                'change_password': false,
+                'profile': false,
+                'p_flash_message': true,
+
+                'p_success_message': '',
+
+                'pw_new': false,
+                'pw_matched': false,
+                'pw_req_char': false,
+                'invalid_filetype': false,
+                'all_required': false,
+
+                'flag_pw': true,
+                'flag_cpw': true,
+
+                // Button disabled
+                'p_disable_button': false,
+
+                //PROFILE
+                'imageUrl': '',
+                'p_avatar': '',
+                'avatar': '',
+                'account_type': '',
+                'account_status': '',
+                'account_name': '',
+
+                'file_type': '',
+                'file_path': '',
+
+                // Forecast
+                'show_model_list': false,
+                'forecast_models': {{ forecast_models|safe }},
+                'current_model': '',
+                'current_model_accuracy': '',
+                'current_model_retrained': '',
+                
+                get_profile_details(){
+                    this.profile = true;
+                    this.avatar = '/static/uploads/profile_pictures/'+'{{auth_user.avatar}}';
+                    this.account_type = '{{ "Admin" if auth_user.user_type == 0 else "Personnel" }}';
+                    this.account_status = '{{ "Active" if auth_user.is_active == 1 else "Inactive" }}';
+                    this.account_name = '{{ auth_user.first_name +' '+ auth_user.last_name +' '+ (auth_user.middle_name[0].upper() if auth_user.middle_name else '') }}';
+                    this.$refs.p_first_name.value = '{{ auth_user.first_name }}';
+                    this.$refs.p_middle_name.value = '{{ auth_user.middle_name if auth_user.middle_name != None else '' }}';
+                    this.$refs.p_last_name.value = '{{ auth_user.last_name }}';
+                    this.$refs.p_address.value = '{{ auth_user.address }}';
+                    this.$refs.p_contact_number.value = '{{ auth_user.contact_number }}';
+                    this.$refs.p_email.value = '{{ auth_user.email }}';
+                },
+                update_profile(){
+                    if( this.$refs.p_first_name.value && this.$refs.p_last_name.value && this.$refs.p_address.value && this.$refs.p_contact_number.value && this.$refs.p_email.value ){
+                        this.all_required = false;
+                        this.$refs.p_save.type = 'submit';
+                    }
+                    else {
+                        this.all_required = true;
+                        setTimeout(() => {
+                            this.all_required = false;
+                        }, 3000);
+                    }
+                },
+                fileChosen(event) {
+                    this.invalid_filetype = false;
+                    if(this.$refs.p_avatar || this.$refs.p_avatar2){
+                        var allowed_ext = ['jpeg', 'jpg', 'png', 'gif'];
+                        var uploaded_img_ext = '';
+                        var allowed = false;
+                        if(this.$refs.p_avatar){
+                            uploaded_img_ext = this.$refs.p_avatar.value.split('.').pop();
+                        }
+                        else if(this.$refs.p_avatar2){
+                            uploaded_img_ext = this.$refs.p_avatar2.value.split('.').pop();
+                        }
+                        for(let i = 0; i < allowed_ext.length; i++){
+                            if(uploaded_img_ext.toLowerCase() == allowed_ext[i]){
+                                allowed = true;
+                                break;
+                            }
+                        }
+
+                        if(allowed){
+                            this.fileToDataUrl(event, src => this.imageUrl = src)
+                        }
+                        else {
+                            this.invalid_filetype = true;
+                            setTimeout(() => {
+                                this.invalid_filetype = false;
+                            }, 3000);
+                        }
+                    }
+                    if(this.$refs.p_avatar2.value){
+                        uploaded_img_ext = this.$refs.p_avatar.value = '';
+                    }
+                },
+                fileToDataUrl(event, callback) {
+                    if (! event.target.files.length) return
+
+                    let file = event.target.files[0];
+                    reader = new FileReader();
+                    reader.readAsDataURL(file);
+                    reader.onload = e => callback(e.target.result);
+                },
+                profile_password(){
+                    if(this.$refs.c_password.value && this.$refs.c_confirm_password.value){
+                        var passed = true;
+                        if(this.$refs.c_password.value != this.$refs.c_confirm_password.value){
+                            this.pw_matched = true;
+                            passed = false;
+                        }
+                        if(this.$refs.c_password.value.length <= 5){
+                            this.pw_req_char = true;
+                            passed = false;
+                        }
+
+                        if(passed){
+                            const data = {
+                                'user_id' : this.$refs.current_user_id.value,
+                                'password': this.$refs.c_password.value,
+                            };
+                            axios.post('/update-password', data)
+                                .then((response) => {
+                                    this.$refs.c_password.value = '';
+                                    this.$refs.c_confirm_password.value = '';
+                                    this.show_success = response.data;
+                                    this.change_password = false;
+                                    this.p_success_message = 'Password Successfully Updated!';
+                                    setTimeout(() => {
+                                        this.show_success = false;
+                                        this.p_success_message = 'Password Successfully Updated!';
+                                    }, 3000);
+                                });
+                        }
+                    }
+                    else {
+                        this.pw_new = true;
+                    }
+                    setTimeout(() => {
+                        this.pw_matched = false;
+                        this.pw_req_char = false;
+                        this.pw_new = false;
+                    }, 2000);
+                }
+            }));
+        });
+    </script>
+{% endblock %}

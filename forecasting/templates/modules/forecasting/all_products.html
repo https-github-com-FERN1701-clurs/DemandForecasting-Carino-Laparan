@@ -1,0 +1,62 @@
+<div class="-mb-20 lg:px-5 py-3 relative" x-show="show_all_products" style="display: none;">
+    <div x-on:items-load.window="all_forecasts = $event.detail.all_forecasts">
+        <template x-for="(products, index) in all_forecasts" :key="index">
+            <!-- <div class=" inline-flex my-2 rounded-md items-center bg-gray-200 bg-opacity-80 justify-center m-auto overflow-y-auto overflow-x-hidden right-0 left-0 w-full md:inset-0 px-2 py-2" -->
+            <div class="flex flex-row my-2 rounded-md items-center bg-gray-200 bg-opacity-80 justify-center m-auto overflow-x-hidden  w-full md:inset-0 px-2 py-2"
+                >
+                <!-- GRAPH OPTIONS -->
+                <div class="flex flex-col p-2 -mr-60 bg-gray-100 rounded-md h-64 left-2 w-64 overflow-y-auto">
+                    <div class="flex flex-col w-full">
+                        <span style="font-size: 0.7rem;" class="text-gray-500">Frequency</span>
+                        <div class="flex flex-row space-x-2">
+                            <div class="flex justify-center space-x-1 rounded-lg border border-gray-300 p-1" role="group">
+                                <button type="button" style="font-size: 0.7rem;" class="px-1 text-gray-500 rounded-md border-2 focus:border-yellow-400"
+                                    x-on:click="change_frequency_ap('W', products, index, genenerate_id(products))">
+                                    <span class="">Weekly</span>
+                                </button>
+                                <button type="button" style="font-size: 0.7rem;" class="px-1 text-gray-500 rounded-md border-2 focus:border-yellow-400"
+                                    x-on:click="change_frequency_ap('M', products, index, genenerate_id(products))">
+                                    <span class="">Monthly</span>
+                                </button>
+                                <button type="button" style="font-size: 0.7rem;" class="px-1 text-gray-500 rounded-md border-2 focus:border-yellow-400"
+                                    x-on:click="change_frequency_ap('Q', products, index, genenerate_id(products))">
+                                    <span class="">Quarterly</span>
+                                </button>
+                                <button type="button" style="font-size: 0.7rem;" class="px-1 text-gray-500 rounded-md border-2 focus:border-yellow-400"
+                                    x-on:click="change_frequency_ap('Y', products, index, genenerate_id(products))">
+                                    <span class="">Yearly</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex flex-col w-full space-y-1">
+                        <div class="flex flex-row items-center justify-between p-1">
+                            <span style="font-size: 0.8rem;" class="text-gray-500">Product Name</span>
+                            <span style="font-size: 0.7rem;" class="text-gray-700 bg-green-100 rounded-md px-2 py-1" x-text="(products['product_name'])"></span>
+                        </div>
+                        <div class="flex flex-row items-center justify-between">
+                            <span style="font-size: 0.8rem;" class="text-gray-500">Forecasted Weeks</span>
+                            <span style="font-size: 0.7rem;" class="text-gray-700 bg-green-100 rounded-md px-2 py-1" x-text="number_of_weeks(products)"></span>
+                        </div>
+                        <div class="flex flex-row items-center justify-between">
+                            <span style="font-size: 0.8rem;" class="text-gray-500">Estimated Sales</span>
+                            <span style="font-size: 0.7rem;" class="text-gray-700 bg-green-100 rounded-md px-2 py-1" x-text="estimated_sales(products)"></span>
+                        </div>
+                        <div class="flex flex-row items-center justify-between">
+                            <span style="font-size: 0.8rem;" class="text-gray-500">Estimated Revenue</span>
+                            <span style="font-size: 0.7rem;" class="text-gray-700 bg-green-100 rounded-md px-2 py-1" x-text="estimated_revenue(products)"></span>
+                        </div>
+                    </div>
+                </div>
+                <!-- GRAPH OPTIONS -->
+
+                <!-- GRAPH -->
+                <canvas :id="genenerate_id(products)" class="ml-64 h-64 bg-gray-100 rounded-md w-full"></canvas>
+                <div class="" x-init="$nextTick(() => {process_allproducts(products, genenerate_id(products), index)})"></div>
+                <!-- <div class="" x-init="$watch(process_allproducts(products, genenerate_id(products), index))"></div> -->
+                <!-- GRAPH -->
+            </div>
+            
+        </template>
+    </div>
+</div>

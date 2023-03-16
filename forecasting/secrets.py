@@ -1,0 +1,16 @@
+DB_HOST             = 'localhost'
+DB_USERNAME         = 'root'
+DB_PASSWORD         = ''
+DB_PORT             = 3306
+DB_DATABASENAME     = 'db_forecasting'
+UPLOAD_FOLDER       = 'static/uploads/csv'
+BRANCH_DATA_FOLDER  = 'static/uploads/csv/branches_data'
+MERGED_DATA_FOLDER  = 'static/uploads/csv/merged_data'
+VALIDATION_DATA     = 'static/uploads/csv/validation_data'
+RETRAINING_DATA     = 'static/uploads/csv/retraining_data'
+# TEMPS               = 'static/uploads/csv/temps'
+MODELS              = 'static/models'
+PROFILE_PICTURES    = 'static/uploads/profile_pictures'
+ALLOWED_EXTENSIONS  = {'csv', 'xlxs'}
+SECRET_KEY          = 'sha256$kg2FeX198wY2QNtI$7f794e0901c035da6322c4a88afec56d7dd4275243016b5886496daf89c54a3d'
+LAST_FILE_UPLOADED  = ''

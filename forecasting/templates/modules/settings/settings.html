@@ -1,0 +1,600 @@
+{% extends 'layout/navigation.html' %}
+{% block title %} Settings | Demand Forecasting {% endblock %}
+{% block breadcrumb %}
+    Settings
+{% endblock %}
+{% block module %}
+    <div class="w-full pb-5 lg:px-5 " x-data="settings">
+        <div class="flex flex-col">
+            <div class="flex flex-row items-center justify-between space-x-3 mt-3">
+                <span class="text-lg font-semibold text-gray-500">Branches</span>
+                {% if permissions.setting_c %}
+                    <button type="button" class="inline-flex items-center px-4 py-2 bg-green-500 border border-transparent rounded-lg font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-400 active:bg-gray-900 focus:outline-none focus:border-gray-900 focus:ring ring-gray-300 disabled:opacity-25 transition ease-in-out duration-150" x-on:click="new_branch = true">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 -ml-1 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        New
+                    </button>
+                {% endif %}
+            </div>
+            <div class="mt-5">
+                <div class="overflow-x-auto relative">
+                    <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                            <tr>
+                                <th scope="col" class="text-center py-3 px-6 bg-yellow-100 rounded-l-lg">
+                                    Branch ID
+                                </th>
+                                <th scope="col" class="text-center py-3 px-6 bg-yellow-100">
+                                    Branch Description
+                                </th>
+                                <th scope="col" class="text-center py-3 px-6 bg-yellow-100">
+                                    Branch Address
+                                </th>
+                                <th scope="col" class="text-center py-3 px-6 bg-yellow-100 rounded-r-lg">
+                                    Action
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody class="">
+                            {% for branch in branches %}
+                                <tr class="dark:bg-gray-800">
+                                    <td class="py-1 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                        <div class="rounded-l-lg text-center bg-white py-3 px-6 -ml-1">
+                                            {{branch.branch_id}}
+                                        </div>
+                                    </td>
+                                    <td class="py-1 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                        <div class="text-center bg-white py-3 px-6 -ml-1">
+                                            <span class="bg-green-200 rounded-lg py-1 px-2">{{branch.branch_description}}</span>
+                                        </div>
+                                    </td>
+                                    <td class="py-1 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                        <div class="text-center bg-white py-3 px-6 -ml-1">
+                                            {{branch.branch_address}}
+                                        </div>
+                                    </td>
+                                    <td class="py-1 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                        <div class="-ml-4 item-center justify-center flex flex-row space-x-1 bg-white rounded-r-lg">
+                                            {% if permissions.setting_u %}
+                                                <div class="bg-white py-1 -ml-1">
+                                                    <button type="button" class="hover:bg-gray-100 hover:text-green-300 focus:bg-gray-300 focus:text-white w-9 h-9 rounded-full"
+                                                        x-on:click="update_branch = true, $refs.u_id.value = '{{ branch.id }}', $refs.u_branch_id.value = '{{ branch.branch_id }}', $refs.u_branch_description.value = '{{branch.branch_description}}', $refs.u_branch_address.value = '{{branch.branch_address}}'">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                                        </svg>
+                                                    </button>
+                                                </div>
+                                            {% endif %}
+                                            {% if permissions.setting_d %}
+                                                <div class="bg-white py-1 -ml-1">
+                                                    <button type="button" class="hover:bg-gray-100 hover:text-red-300 focus:bg-gray-300 focus:text-white w-9 h-9 rounded-full"
+                                                        x-on:click="delete_branch = true, branch_id = '{{ branch.id }}', branch_description = '{{branch.branch_description}}'">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                        </svg>
+                                                    </button>
+                                                </div>
+                                            {% endif %}
+                                            {% if permissions.setting_u == False and permissions.setting_d == False %}
+                                                <div class="bg-white py-1 -ml-1">
+                                                    <button disabled type="button" class="w-9 h-9 cursor-default">
+                                                        
+                                                    </button>
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="flex flex-col mt-5">
+            <div class="flex flex-row items-center justify-between space-x-3 mt-3">
+                <span class="text-lg font-semibold text-gray-500">Branch Data</span>
+            </div>
+            <div class="mt-5">
+                <div class="overflow-x-auto relative">
+                    <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                            <tr>
+                                <th scope="col" class="text-center py-3 px-6 bg-yellow-100 rounded-l-lg">
+                                    Branch Description
+                                </th>
+                                <th scope="col" class="text-center py-3 px-6 bg-yellow-100">
+                                    Number of Products
+                                </th>
+                                <th scope="col" class="text-center py-3 px-6 bg-yellow-100">
+                                    Number of Data
+                                </th>
+                                <th scope="col" class="text-center py-3 px-6 bg-yellow-100 rounded-r-lg">
+                                    Delete
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody class="">
+                            {% for key,values in branch_data.items() %}
+                                <tr class="dark:bg-gray-800">
+                                    <td class="py-1 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                        <div class="rounded-l-lg text-center bg-white py-3 px-6 -ml-1">
+                                            <span class="bg-green-200 rounded-lg py-1 px-2">{{values.branch_description}}</span>
+                                        </div>
+                                    </td>
+                                    <td class="py-1 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                        <div class="text-center bg-white py-3 px-6 -ml-1">
+                                            <span class="bg-gray-200 rounded-lg py-1 px-2">{{ "{:,}".format(values.product_count)}}</span>
+                                        </div>
+                                    </td>
+                                    <td class="py-1 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                        <div class="text-center bg-white py-3 px-6 -ml-1">
+                                            <span class="bg-gray-200 rounded-lg py-1 px-2">{{ "{:,}".format(values.data_count)}} Rows</span>
+                                        </div>
+                                    </td>
+                                    <td class="py-1 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                        <div class="-ml-4 item-center justify-center flex flex-row space-x-1 bg-white rounded-r-lg">
+                                            {% if permissions.setting_d %}
+                                                <div class="bg-white py-1 -ml-1">
+                                                    <button type="button" class="hover:bg-gray-100 hover:text-red-300 focus:bg-gray-300 focus:text-white w-9 h-9 rounded-full"
+                                                        x-on:click="delete_branch_data = true, delete_data_description = '{{values.branch_description}}', delete_data_id = '{{values.branch_id}}'">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                        </svg>
+                                                    </button>
+                                                </div>
+                                            {% endif %}
+                                            {% if permissions.setting_d == False %}
+                                                <div class="bg-white py-1 -ml-1">
+                                                    <button disabled type="button" class="w-9 h-9 cursor-default">
+                                                        
+                                                    </button>
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex flex-col mt-5" id="algorithms">
+            <div class="flex flex-row items-center justify-between space-x-3 mt-3">
+                <span class="text-lg font-semibold text-gray-500">Forecasting models</span>
+            </div>
+            <div class="mt-5">
+                <div class="overflow-x-auto relative">
+                    <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                            <tr>
+                                <th scope="col" class="text-center py-3 px-6 bg-yellow-100 rounded-l-lg">
+                                    Algorithm Name
+                                </th>
+                                <th scope="col" class="text-center py-3 px-6 bg-yellow-100">
+                                    Training Data
+                                </th>
+                                <th scope="col" class="text-center py-3 px-6 bg-yellow-100">
+                                    Accuracy
+                                </th>
+                                <th scope="col" class="text-center py-3 px-6 bg-yellow-100">
+                                    Retrained
+                                </th>
+                                <th scope="col" class="text-center py-3 px-6 bg-yellow-100">
+                                    Date Created
+                                </th>
+                                <th scope="col" class="text-center py-3 px-6 bg-yellow-100 rounded-r-lg">
+                                    Action
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody class="">
+                            <template x-for="models in forecast_models_">
+                                <tr class="dark:bg-gray-800">
+                                    <td class="py-1 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                        <div class="rounded-l-lg text-center bg-white py-3 px-6 -ml-1">
+                                            <span class="rounded-lg py-1 px-2" :class="[models.is_used == 1 ? 'bg-yellow-300' : 'bg-blue-100']">
+                                                <span x-text="models.algorithm_name"></span>
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <td class="py-1 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                        <div class="rounded-l-lg text-center bg-white py-3 px-6 -ml-1">
+                                            <span class="rounded-lg py-1 px-2" :class="[models.is_used == 1 ? 'bg-yellow-300' : 'bg-blue-100']">
+                                                <span x-text="models.training_data"></span>
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <td class="py-1 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                        <div class="rounded-l-lg text-center bg-white py-3 px-6 -ml-1">
+                                            <span class="rounded-lg py-1 px-2 " :class="[models.is_used == 1 ? 'bg-yellow-300' : 'bg-blue-100']">
+                                                <span x-text="models.model_accuracy"></span>
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <td class="py-1 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                        <div class="rounded-l-lg text-center bg-white py-3 px-6 -ml-1">
+                                            <span class="rounded-lg py-1 px-2 " :class="[models.is_used == 1 ? 'bg-yellow-300' : 'bg-blue-100']">
+                                                <span x-text="models.is_retrained == 0 ? 'False' : 'True'"></span>
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <td class="py-1 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                        <div class="rounded-l-lg text-center bg-white py-3 px-6 -ml-1">
+                                            <span class="rounded-lg py-1 px-2 " :class="[models.is_used == 1 ? 'bg-yellow-300' : 'bg-blue-100']">
+                                                <span x-text="date_formatter(models.date_created)"></span>
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <td class="py-1 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                        <div class="-ml-4 item-center justify-center flex flex-row space-x-1 bg-white rounded-r-lg">
+                                            <div class="bg-white py-1 -ml-1">
+                                                <button type="button" title="use model" class="hover:bg-gray-100 hover:text-green-300 focus:bg-gray-300 focus:text-white w-9 h-9 rounded-full"
+                                                    x-on:click="use_model(models.id,  models.is_used, models.algorithm_name)">
+                                                    <!-- <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                                    </svg> -->
+                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-5 w-5 mx-auto">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.59 14.37a6 6 0 01-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 006.16-12.12A14.98 14.98 0 009.631 8.41m5.96 5.96a14.926 14.926 0 01-5.841 2.58m-.119-8.54a6 6 0 00-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 00-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 01-2.448-2.448 14.9 14.9 0 01.06-.312m-2.24 2.39a4.493 4.493 0 00-1.757 4.306 4.493 4.493 0 004.306-1.758M16.5 9a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" />
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                            {% if permissions.setting_u %}
+                                                <div class="bg-white py-1 -ml-1">
+                                                    <button type="button" title="retrain model" class="hover:bg-gray-100 hover:text-green-300 focus:bg-gray-300 focus:text-white w-9 h-9 rounded-full"
+                                                        x-on:click="confirm_action_retraining(models.id, models.is_used, models.algorithm_name, models.retrained_year)">
+                                                        <!-- <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                                        </svg> -->
+                                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-5 w-5 mx-auto">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" d="M11.42 15.17L17.25 21A2.652 2.652 0 0021 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 11-3.586-3.586l6.837-5.63m5.108-.233c.55-.164 1.163-.188 1.743-.14a4.5 4.5 0 004.486-6.336l-3.276 3.277a3.004 3.004 0 01-2.25-2.25l3.276-3.276a4.5 4.5 0 00-6.336 4.486c.091 1.076-.071 2.264-.904 2.95l-.102.085m-1.745 1.437L5.909 7.5H4.5L2.25 3.75l1.5-1.5L7.5 4.5v1.409l4.26 4.26m-1.745 1.437l1.745-1.437m6.615 8.206L15.75 15.75M4.867 19.125h.008v.008h-.008v-.008z" />
+                                                        </svg>
+                                                    </button>
+                                                </div>
+                                            {% endif %}
+                                            {% if permissions.setting_d %}
+                                                <div class="bg-white py-1 -ml-1">
+                                                    <button type="button" title="delete model" class="hover:bg-gray-100 hover:text-red-300 focus:bg-gray-300 focus:text-white w-9 h-9 rounded-full"
+                                                        x-on:click="confirm_delete_model(models.id, models.is_used)">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                        </svg>
+                                                    </button>
+                                                </div>
+                                            {% endif %}
+                                            {% if permissions.setting_u == False and permissions.setting_d == False %}
+                                                <div class="bg-white py-1 -ml-1">
+                                                    <button disabled type="button" class="w-9 h-9 cursor-default">
+                                                        
+                                                    </button>
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        
+
+
+        {% include 'modules/settings/new_branch.html' %}
+        {% include 'modules/settings/delete_branch.html' %}
+        {% include 'modules/settings/delete_branch_data.html' %}
+        {% include 'modules/settings/update_branch.html' %}
+        {% include 'modules/settings/retrain_model.html' %}
+        {% include 'modules/settings/delete_model.html' %}
+        
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    {% if category == 'success' %}
+                        <div class="fixed z-50 bottom-0 right-0 mb-5 mr-3 items-center justify-center w-80" style="display: none" x-show="success">
+                            <div class="flex items-center justify-between bg-white rounded border-l-4 border-green-400 overflow-hidden p-2 space-x-3 h-20 shadow-md"
+                                    x-transition:enter="transition ease-out duration-1000 delay-400"
+                                    x-transition:enter-start="opacity-0 delay-1000"
+                                    x-transition:enter-end="opacity-100"
+                                    x-transition:leave="transition ease-in duration-700"
+                                    x-transition:leave-start="opacity-100"
+                                    x-transition:leave-end="opacity-0">
+                                <div class="flex flex-row items-center">
+                                    <div class="flex flex-row">
+                                        <span class="border-2 border-green-400 bg-white bg-opacity-50 rounded-full p-1 mr-3">
+                                            <svg class="h-6 w-auto text-green-400" fill="currentColor" viewBox="0 0 20 20" >
+                                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" ></path>
+                                            </svg>
+                                        </span>
+                                    </div>
+                                    <div class="flex flex-col items-start">
+                                        <p class="leading-tight text-xs md:text-sm">
+                                            <strong class="text-green-400 text-lg">Success</strong>
+                                        </p>
+                                        <p class="leading-tight text-xs md:text-sm">
+                                            <span class="text-gray-400">{{ message }}</span>
+                                        </p>
+                                    </div>
+                                </div>
+                
+                                <div>
+                                    <button type="button" class="text-gray-700 rounded overflow-hidden p-1 lg:p-2 focus:outline-none" @click="success = false">
+                                        <svg class="h-4 w-auto" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="fixed z-50 bottom-0 right-0 mb-5 mr-3 items-center justify-center w-80" style="display: none" x-show="model_error">
+            <div class="flex items-center justify-between bg-white rounded border-l-4 border-red-400 overflow-hidden p-2 space-x-3 h-20 shadow-md"
+                    x-transition:enter="transition ease-out duration-1000 delay-400"
+                    x-transition:enter-start="opacity-0 delay-1000"
+                    x-transition:enter-end="opacity-100"
+                    x-transition:leave="transition ease-in duration-700"
+                    x-transition:leave-start="opacity-100"
+                    x-transition:leave-end="opacity-0">
+                <div class="flex flex-row items-center">
+                    <div class="flex flex-row">
+                        <span class="border-2 border-red-400 bg-white bg-opacity-50 rounded-full p-1 mr-3">
+                            <svg class="h-6 w-auto text-red-400" fill="currentColor" viewBox="0 0 20 20" >
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" ></path>
+                            </svg>
+                        </span>
+                    </div>
+                    <div class="flex flex-col items-start">
+                        <p class="leading-tight text-xs md:text-sm">
+                            <strong class="text-red-400 text-lg" x-text="model_title_msg"></strong>
+                        </p>
+                        <p class="leading-tight text-xs md:text-sm">
+                            <span class="text-gray-400" x-text="model_content_msg"></span>
+                        </p>
+                    </div>
+                </div>
+
+                <div>
+                    <button type="button" class="text-gray-700 rounded overflow-hidden p-1 lg:p-2 focus:outline-none" @click="model_error = false, model_success = false, model_title_msg = '', model_content_msg = ''">
+                        <svg class="h-4 w-auto" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="fixed z-50 bottom-0 right-0 mb-5 mr-3 items-center justify-center w-80" style="display: none" x-show="model_success">
+            <div class="flex items-center justify-between bg-white rounded border-l-4 border-green-400 overflow-hidden p-2 space-x-3 h-20 shadow-md"
+                    x-transition:enter="transition ease-out duration-1000 delay-400"
+                    x-transition:enter-start="opacity-0 delay-1000"
+                    x-transition:enter-end="opacity-100"
+                    x-transition:leave="transition ease-in duration-700"
+                    x-transition:leave-start="opacity-100"
+                    x-transition:leave-end="opacity-0">
+                <div class="flex flex-row items-center">
+                    <div class="flex flex-row">
+                        <span class="border-2 border-green-400 bg-white bg-opacity-50 rounded-full p-1 mr-3">
+                            <svg class="h-6 w-auto text-green-400" fill="currentColor" viewBox="0 0 20 20" >
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" ></path>
+                            </svg>
+                        </span>
+                    </div>
+                    <div class="flex flex-col items-start">
+                        <p class="leading-tight text-xs md:text-sm">
+                            <strong class="text-green-400 text-lg" x-text="model_title_msg"></strong>
+                        </p>
+                        <p class="leading-tight text-xs md:text-sm">
+                            <span class="text-gray-400" x-text="model_content_msg"></span>
+                        </p>
+                    </div>
+                </div>
+
+                <div>
+                    <button type="button" class="text-gray-700 rounded overflow-hidden p-1 lg:p-2 focus:outline-none" @click="model_success = false, model_error = false, model_title_msg = '', model_content_msg = ''">
+                        <svg class="h-4 w-auto" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex items-center h-full justify-center bg-gray-200 bg-opacity-70 mx-auto overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 w-full  md:inset-0 px-2 pt-2" style="display: none" x-show="start_retraining_model">
+            <div class="flex flex-col relative w-full max-w-lg rounded-lg" x-show="error_from_alpine_js_settings == ''">
+                <div class="flex flex-col  items-center">
+                    <p class="leading-tight text-xs md:text-sm text-center">
+                        <span class="text-green-400 font-bold text-lg" x-text="setting_status"></span>
+                        <br/>
+                        <span class="text-gray-400 font-bold text-lg" x-text="setting_current_task"></span>
+                    </p>
+                    <img src="{{ url_for('static', filename="/img/spinner.png") }}" alt="" class="animate-spin w-7 h-7 mx-auto">
+                </div>
+            </div>
+            <div class="flex flex-col justify-center w-full max-w-lg rounded-lg" x-show="error_from_alpine_js_settings" >
+                <div class="flex flex-col justfy-center items-center">
+                    <p class="leading-tight text-xs md:text-sm text-center">
+                        <span class="text-gray-900 font-bold text-md" x-text="error_from_alpine_js_settings"></span>
+                    </p>
+                    <img src="{{ url_for('static', filename="/img/nodata.png") }}" alt="" class="w-12 h-12 mx-auto">
+                </div>
+            </div>
+        </div>
+        <div class="flex items-center h-full justify-center bg-gray-200 bg-opacity-70 mx-auto overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 w-full  md:inset-0 px-2 pt-2" style="display: none" x-show="no_click_allowed">
+            
+        </div>
+    </div>
+    <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('settings', () => ({
+                'branch_id': '',
+                'delete_data_id': '',
+                'delete_data_description': '',
+                'branch_description': '',
+                'new_branch': {{ new_branch }},
+                'update_branch': {{ update_branch }},
+                'delete_branch': false,
+                'delete_branch_data': false,
+                'user_error': false,
+                'user_error_message': false,
+                'success': true,
+                'flask_error': true,
+                'forecast_models_': {{ forecast_models|safe }},
+
+                'model_error': false,
+                'model_success': false,
+                'model_title_msg': '',
+                'model_content_msg': '',
+
+                'start_retraining_model': false,
+                'setting_status': '',
+                'setting_current_task': 'Processing Data, Please wait...',
+                
+                'show_confirm': false,
+                'show_confirm_delete_model': false,
+                'no_click_allowed': false,
+
+                //Error from AlpineJS
+                'error_from_alpine_js_settings': '',
+                //Error from AlpineJS
+                
+                submit_new_branch() {
+                    if(this.$refs.n_branch_description.value == '' ||  this.$refs.n_branch_address.value == '' || this.$refs.n_branch_id.value == '') {
+                        this.user_error = true;
+                        this.user_error_message = 'Please fill up all fields';
+                    }
+                    else {
+                        this.$refs.save.type = 'submit';
+                    }
+                },
+                submit_update_branch() {
+                    if(this.$refs.u_branch_description.value == '' ||  this.$refs.u_branch_address.value == '' || this.$refs.u_branch_id.value == '') {
+                        this.user_error = true;
+                        this.user_error_message = 'Please fill up all fields';
+                    }
+                    else {
+                        this.$refs.update.type = 'submit';
+                    }
+                },
+                date_formatter(date_input){
+                    const MONTH_SHORT_NAMES = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+                    var date_object = new Date(date_input);
+                    var month = date_object.getMonth();
+                    var day = date_object.getDate();
+                    var year = date_object.getFullYear();
+
+                    if (day.toString().length < 2) 
+                        day = '0' + day;
+
+                    //time_series[i] = (MONTH_SHORT_NAMES[month]+'-'+day+'-'+ year);
+                    converted_date = (MONTH_SHORT_NAMES[month]+' '+day+', '+ year);
+                    
+                    return converted_date;
+                },
+                confirm_delete_model(model_id, is_used_flag){
+                    this.show_confirm_delete_model = true;
+
+                    this.$refs._c_model_id.value = model_id;
+                    this.$refs._c_is_used.value = is_used_flag;
+                },
+                delete_model(model_id, is_used_flag){
+                    if(is_used_flag == 1){
+
+                        this.model_error = true;
+                        this.model_title_msg = 'Error';
+                        this.model_content_msg = 'Cannot delete currently use model';
+                    }
+                    else {
+                        let form = new FormData;
+                        form.append('model_id', model_id);
+                        axios.post('/delete-model', form)
+                        .then((response) => {
+                            //console.log(response.data);
+
+                            this.forecast_models_ = response.data;
+                            
+                            this.model_success = true;
+                            this.model_title_msg = 'Success';
+                            this.model_content_msg = 'Model deleted successfully';
+                        });
+                    }
+                },
+                async use_model(model_id, is_used_flag, algorithm_name){
+                    this.no_click_allowed = true;
+                    if(is_used_flag == 1){
+                        setTimeout(() => {
+                            this.no_click_allowed = false;
+                        }, 1000);
+                        setTimeout(() => {
+                            this.model_success = true;
+                            this.model_title_msg = '  ';
+                            this.model_content_msg = 'Selected model currently used';
+                        }, 500);
+                        
+                        
+                    }
+                    else {
+                        let form = new FormData;
+                        form.append('model_id', model_id);
+                        await axios.post('/use-model', form)
+                        .then((response) => {
+                            this.forecast_models_ = response.data;
+                            
+                            setTimeout(() => {
+                                this.no_click_allowed = false;
+                            }, 1000);
+                            setTimeout(() => {
+                                this.model_success = true;
+                                this.model_title_msg = 'Success';
+                                this.model_content_msg = algorithm_name + ' selected';
+                            }, 500);
+                        });
+                    }
+                    
+                },
+                confirm_action_retraining(model_id, is_used_flag, algorithm_name, year_train){
+                    this.show_confirm = true;
+                    this.$refs._model_id.value = model_id;
+                    this.$refs._is_used_flag.value = is_used_flag;
+                    this.$refs._algorithm_name.value = algorithm_name;
+                    this.$refs._year_train.value = year_train;
+
+                    console.log(year_train);
+                },
+                retrain_selected_model(model_id, is_used_flag, algorithm_name, year_train){
+                    this.start_retraining_model = true;
+                    this.setting_status = 'Feeding Data to the Model';
+
+                    let form = new FormData;
+                    form.append('model_id', model_id);
+                    axios.post('/retrain-selected-model', form)
+                    .then((response) => {
+                        console.log(response.data);
+                        this.forecast_models_ = response.data;
+                        this.setting_status = 'Preparing Model';
+                        setTimeout(() => {
+                            this.start_retraining_model = false;
+                        }, 1500);
+                        setTimeout(() => {
+                            this.model_success = true;
+                            this.model_title_msg = 'Success';
+                            this.model_content_msg = 'Model trained successfully';
+                        }, 500);
+                    },
+                    (error) => {
+                        //console.log(error);
+                        this.error_from_alpine_js_settings = "No retraining data uploaded! Refresh the page, go to upload module under retraining data.";
+                    });
+                }
+            }));
+        });
+    </script>
+{% endblock %}

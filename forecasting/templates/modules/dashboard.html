@@ -1,0 +1,13 @@
+{% extends 'layout/navigation.html' %}
+{% block title %} Dashboard | Demand Forecasting {% endblock %}
+{% block breadcrumb %}
+    Dashboard
+{% endblock %}
+{% block module %}
+    <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 3000)">
+        <h1>Welcome from alert</h1>
+    </div>
+    <div class="">
+
+    </div>
+{% endblock %}

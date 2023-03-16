@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block title %} Demand Forecasting | Login {% endblock %}
+{% block content%}
+    <div class="h-full flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-blue-300">
+        <div class="w-full sm:max-w-sm mt-2 px-6 py-4 bg-gray-800 shadow-md overflow-hidden sm:rounded-md mb-12">
+            <div class="flex flex-col items-center justify-center">
+                <div class="items-center justify-center">
+                    <a href="/">
+                        <img src="{{ url_for('static', filename="/img/company-logo.png") }}" alt="" class="w-24 h-24 mx-auto">
+                    </a>
+                    <h1 class="text-1xl mt-1 text-white text-center uppercase pb-7">Demand Forecasting</h1>
+                </div>
+            </div>
+
+            <div class="">
+                <form method="POST" action="">
+                    {{ form.csrf_token() }}
+                    <div>
+                        <label for="email" class="block font-medium text-sm text-white">Email</label>
+                        <input id="email" type="email" name="email" class="bg-gray-100 block mt-1 w-full rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required autofocus />
+                    </div>
+
+                    <div class="mt-4">
+                        <label for="password" class="block font-medium text-sm text-white">Password</label>
+                        <input id="password" type="password" name="password" class="bg-gray-100 block mt-1 w-full rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required autofocus autocomplete="current-password" />
+                    </div>
+
+                    <!--<div class="block mt-4">
+                        <label for="remember_me" class="inline-flex items-center">
+                            <input id="remember_me" type="checkbox" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" name="remember">
+                            <span class="ml-2 text-sm text-gray-600">Remember me</span>
+                        </label>
+                    </div>-->
+
+                    <div class="flex items-center justify-center mt-10">
+                        <button type="submit" name="login" class="w-full inline-flex justify-center items-center px-auto py-3 bg-blue-300 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 active:bg-gray-300 focus:outline-none focus:border-gray-900 focus:ring ring-gray-300 disabled:opacity-25 transition ease-in-out duration-150" onclick="this.disabled=true;this.form.submit();">
+                            Log in
+                        </button>
+                    </div>
+
+                    <div class="flex items-center justify-end mt-4">
+                        <a class="underline text-sm text-white hover:text-gray-900" href="/forgot-password">
+                            Forgot your password?
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}
